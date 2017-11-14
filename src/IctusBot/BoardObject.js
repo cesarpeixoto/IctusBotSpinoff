@@ -70,9 +70,9 @@ BoardObject.prototype =
             //var ClickX = Math.floor(((this.MainCamera.MouseWCX() / this.IsoOffsetX) + (this.MainCamera.MouseWCY() / this.IsoOffsetY)) / 2) + 1;
             //var ClickY = Math.floor(((this.MainCamera.MouseWCY() / this.IsoOffsetY) - (this.MainCamera.MouseWCX() / this.IsoOffsetX)) / 2) + 1;
             
-            var MousePositionX = InCamera.MouseWCX();
-            var MousePositionY = InCamera.MouseWCY();
-            alert("X no mouse: = " + MousePositionX + " Y no mouse: = " + MousePositionY);
+            // var MousePositionX = InCamera.MouseWCX();
+            // var MousePositionY = InCamera.MouseWCY();
+            // alert("X no mouse: = " + MousePositionX + " Y no mouse: = " + MousePositionY);
 
         }
     },

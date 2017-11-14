@@ -7,11 +7,14 @@ function GameInstance()
     
     this.kGroundSheet = "Assets/GrassSpriteSheet.png";
     this.kCursorSprite = "Assets/Cursor.png";
+    this.kModernSniper = "Assets/ModSinper.png"
+    
     this.kDot = "Assets/Dot.png";
 
 
     this.Board = null;
     this.Cursor = null;
+    this.ModernSniper = null;
 
     this.Dot = null;
 }
@@ -23,6 +26,7 @@ GameInstance.prototype.LoadMap = function ()
     //IctusBot.AudioClips.LoadAudio(musica);
     IctusBot.Textures.LoadTexture(this.kGroundSheet);
     IctusBot.Textures.LoadTexture(this.kCursorSprite);
+    IctusBot.Textures.LoadTexture(this.kModernSniper);
 
     IctusBot.Textures.LoadTexture(this.kDot);
     
@@ -32,6 +36,7 @@ GameInstance.prototype.UnloadMap = function ()
 {
     IctusBot.Textures.UnloadTexture(this.kGroundSheet);
     IctusBot.Textures.UnloadTexture(this.kCursorSprite);
+    IctusBot.Textures.UnloadTexture(this.kModernSniper);
 };
 
 GameInstance.prototype.Initialize = function () 
@@ -47,6 +52,9 @@ GameInstance.prototype.Initialize = function ()
 
     var GlobalAmbientColor = IctusBot.DefaultResources.GetGlobalAmbientColor();
     GlobalAmbientColor[0] += 0.02;
+
+    this.ModernSniper = new UnityObject(this.kModernSniper);
+
     var DotRender = new SpriteSheetRenderComponent(this.kDot);
     DotRender.SetElementPixelPositions(0, 4, 0, 4);      
     DotRender.GetTransform().SetScale(1, 1);         
@@ -68,7 +76,7 @@ GameInstance.prototype.Render = function ()
 
     this.Board.Render(this.MainCamera);
     this.Cursor.Render(this.MainCamera);
-
+    this.ModernSniper.Render(this.MainCamera);
 
 
     this.Dot.Render(this.MainCamera);
@@ -81,6 +89,8 @@ GameInstance.prototype.Update = function ()
     this.MainCamera.Update();
     this.Board.Update(this.MainCamera);
     this.Cursor.Update(this.MainCamera);
+
+    this.ModernSniper.Update();
 
 
     var v = IctusBot.DefaultResources.GetGlobalAmbientColor();

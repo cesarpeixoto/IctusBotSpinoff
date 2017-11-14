@@ -36,7 +36,7 @@ CursorObject.prototype.Update = function (InCamera)
         //var ClickX = Math.floor(((this.MainCamera.MouseWCX() / this.IsoOffsetX) + (this.MainCamera.MouseWCY() / this.IsoOffsetY)) / 2) + 1;
         //var ClickY = Math.floor(((this.MainCamera.MouseWCY() / this.IsoOffsetY) - (this.MainCamera.MouseWCX() / this.IsoOffsetX)) / 2) + 1;
         
-        alert("X no Grid: = " + this.PositionGridClicked[0] + " Y no Grid: = " + this.PositionGridClicked[1]);
+        alert("Posicao X no Array: = " + this.WorldRef.GetCurrentXPosition(InCamera) + " Posicao Y no Array: = " + this.WorldRef.GetCurrentYPosition(InCamera));
 
     }
 

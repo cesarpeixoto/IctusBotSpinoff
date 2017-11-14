@@ -50,10 +50,13 @@ GameInstance.prototype.Initialize = function ()
 
     this.MainCamera.SetBackgroundColor([0.8, 0.8, 0.8, 1]);
 
-    var GlobalAmbientColor = IctusBot.DefaultResources.GetGlobalAmbientColor();
-    GlobalAmbientColor[0] += 0.02;
+    // var GlobalAmbientColor = IctusBot.DefaultResources.GetGlobalAmbientColor();
+    // GlobalAmbientColor[0] -= 0.02;
+    IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() + 1.7);
 
     this.ModernSniper = new UnityObject(this.kModernSniper);
+    this.ModernSniper.SetBoardPosition(0, 0, UnityObject.EFaceing.ELeft);
+    this.ModernSniper.SetTargetLocation(3, 2);
 
     var DotRender = new SpriteSheetRenderComponent(this.kDot);
     DotRender.SetElementPixelPositions(0, 4, 0, 4);      
@@ -76,6 +79,7 @@ GameInstance.prototype.Render = function ()
 
     this.Board.Render(this.MainCamera);
     this.Cursor.Render(this.MainCamera);
+
     this.ModernSniper.Render(this.MainCamera);
 
 
@@ -83,14 +87,14 @@ GameInstance.prototype.Render = function ()
 
 };
 
-GameInstance.prototype.Update = function () 
+GameInstance.prototype.Update = function (DeltaTime) 
 {
     var deltaAmbient = 0.01;
     this.MainCamera.Update();
     this.Board.Update(this.MainCamera);
     this.Cursor.Update(this.MainCamera);
 
-    this.ModernSniper.Update();
+    this.ModernSniper.Update(DeltaTime);
 
 
     var v = IctusBot.DefaultResources.GetGlobalAmbientColor();

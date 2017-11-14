@@ -39,7 +39,7 @@ IctusBot.Core = (function ()
             while ((LagTime >= kMPF) && bIsRunning) 
             {
                 IctusBot.Input.Update();
-                this.Update();      
+                this.Update(ElapsedTime);      
                 LagTime -= kMPF;
             }
 

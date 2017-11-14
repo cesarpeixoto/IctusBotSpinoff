@@ -57,7 +57,7 @@ BoardObject.prototype =
          {                 
              this.BoardSprites[i].Render(InCamera);
          }
-         //this.BoardSprites[0].Render(InCamera);
+         //this.BoardSprites[1].Render(InCamera);
          this.SetGridPosition(InCamera);
     },    
 
@@ -152,18 +152,23 @@ BoardObject.prototype =
     GetRenderPosition: function(InCamera)
     {
         var MousePositionX = InCamera.MouseWCX();
-        var MousePositionY = InCamera.MouseWCY();
-        
-        MousePositionY += this.IsoOffsetY;
+        var MousePositionY = InCamera.MouseWCY();                
 
-        var PositionX = Math.trunc(((MousePositionX / this.IsoOffsetX) + (MousePositionY / this.IsoOffsetY)) / 2);
-        var PositionY = Math.trunc(((MousePositionY / this.IsoOffsetY) - (MousePositionX / this.IsoOffsetX)) / 2);
+        // MousePositionY += this.IsoOffsetY;
 
-        var RenderXPosition = (PositionX - PositionY) * this.IsoOffsetX;
-        var RenderYPosition = (PositionX + PositionY) * this.IsoOffsetY;
-        RenderYPosition += this.IsoOffsetY;
+        // var PositionX = Math.trunc(((MousePositionX / this.IsoOffsetX) + (MousePositionY / this.IsoOffsetY)) / 2);
+        // var PositionY = Math.trunc(((MousePositionY / this.IsoOffsetY) - (MousePositionX / this.IsoOffsetX)) / 2);
 
-        return vec2.fromValues(RenderXPosition, RenderYPosition);
+        // var RenderXPosition = (PositionX - PositionY) * this.IsoOffsetX;
+        // var RenderYPosition = (PositionX + PositionY) * this.IsoOffsetY;
+        // RenderYPosition += this.IsoOffsetY;
+        // return vec2.fromValues(RenderXPosition, RenderYPosition);
+
+         //MousePositionY += FMath.Parse.IsoOffset.Y;
+         //var RenderPosition = FMath.Parse.PositionToGrid(MousePositionX, MousePositionY);
+         //RenderPosition[1] += FMath.Parse.IsoOffset.Y;
+
+        return FMath.Parse.MousePositionToGridRender(MousePositionX, MousePositionY);
 
     },
 

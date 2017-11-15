@@ -115,7 +115,7 @@ CursorObject.prototype.Update = function (InCamera)
     if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Right))
     {
         this.SelectedUnityId.ID = "nil";
-        this.SelectedUnityId,Asset = null;
+        this.SelectedUnityId.Asset = null;
         this.SelectedUnityId.X = -1;
         this.SelectedUnityId.Y = -1;
     }

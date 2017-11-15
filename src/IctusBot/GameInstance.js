@@ -166,26 +166,26 @@ GameInstance.prototype.Update = function (DeltaTime)
     this.UnitysMap.Update(DeltaTime);
 
 
-    var v = IctusBot.DefaultResources.GetGlobalAmbientColor();
-    if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Left)) 
-    {
-        v[0] += deltaAmbient;
-    }
+    // var v = IctusBot.DefaultResources.GetGlobalAmbientColor();
+    // if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Left)) 
+    // {
+    //     v[0] += deltaAmbient;
+    // }
 
-    if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Middle)) 
-    {
-        v[0] -= deltaAmbient;
-    }
+    // if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Middle)) 
+    // {
+    //     v[0] -= deltaAmbient;
+    // }
 
-    if (IctusBot.Input.IsKeyPressed(IctusBot.Input.keys.Left)) 
-    {
-        IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() - deltaAmbient);
-    }
+    // if (IctusBot.Input.IsKeyPressed(IctusBot.Input.keys.Left)) 
+    // {
+    //     IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() - deltaAmbient);
+    // }
 
-    if (IctusBot.Input.IsKeyPressed(IctusBot.Input.keys.Right)) 
-    {
-        IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() + deltaAmbient);
-    }
+    // if (IctusBot.Input.IsKeyPressed(IctusBot.Input.keys.Right)) 
+    // {
+    //     IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() + deltaAmbient);
+    // }
 
 
 };

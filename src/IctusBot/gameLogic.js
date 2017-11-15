@@ -1,19 +1,19 @@
 var board = [
-  ["1bomb", "nil", "nil", "nil", "nil", "nil", "2bomb"],
-  ["1sniper", "1tank", "nil", "nil", "nil", "2tank", "2sniper"],
-  ["1hero", "1tank", "nil", "nil", "nil", "2tank", "2hero"],
-  ["1sniper", "1tank", "nil", "nil", "nil", "2tank", "2sniper"],
-  ["1bomb", "nil", "nil", "nil", "nil", "nil", "2bomb"]
+  ["1bomb0", "nil", "nil", "nil", "nil", "nil", "2bomb0"],
+  ["1sniper0", "1tank0", "nil", "nil", "nil", "2tank0", "2sniper0"],
+  ["1hero", "1tank1", "nil", "nil", "nil", "2tank1", "2hero"],
+  ["1sniper1", "1tank2", "nil", "nil", "nil", "2tank2", "2sniper1"],
+  ["1bomb1", "nil", "nil", "nil", "nil", "nil", "2bomb1"]
 ];
 currentTurn = 1;
 
 function GameSetup() {
   board = [
-    ["1bomb", "nil", "nil", "nil", "nil", "nil", "2bomb"],
-    ["1sniper", "1tank", "nil", "nil", "nil", "2tank", "2sniper"],
-    ["1hero", "1tank", "nil", "nil", "nil", "2tank", "2hero"],
-    ["1sniper", "1tank", "nil", "nil", "nil", "2tank", "2sniper"],
-    ["1bomb", "nil", "nil", "nil", "nil", "nil", "2bomb"]
+    ["1bomb0", "nil", "nil", "nil", "nil", "nil", "2bomb0"],
+    ["1sniper0", "1tank0", "nil", "nil", "nil", "2tank0", "2sniper0"],
+    ["1hero", "1tank1", "nil", "nil", "nil", "2tank1", "2hero"],
+    ["1sniper1", "1tank2", "nil", "nil", "nil", "2tank2", "2sniper1"],
+    ["1bomb1", "nil", "nil", "nil", "nil", "nil", "2bomb1"]
   ];
   currentTurn = 1;
 
@@ -24,25 +24,33 @@ function GameSetup() {
 //Retorna um array de MovementData
 function GetMovementPossibilities(x, y, unit){
   switch(unit) {
-    case "1bomb":
+    case "1bomb0":
+    case "1bomb1":
         var data = MovementPossibilitiesForBomber(x, y, 1);
         return data;
-    case "1tank":
+    case "1tank0":
+    case "1tank1":
+    case "1tank2":
         var data = MovementPossibilitiesForTank(x, y, 1);
         return data;
-    case "1sniper":
+    case "1sniper0":
+    case "1sniper1":
         var data = MovementPossibilitiesForSniper(x, y, 1);
         return data;
     case "1hero":
         var data = MovementPossibilitiesForHero(x, y, 1);
         return data;
-    case "2bomb":
+    case "2bomb0":
+    case "2bomb1":
         var data = MovementPossibilitiesForBomber(x, y, 2);
         return data;
-    case "2tank":
+    case "2tank0":
+    case "2tank1":
+    case "2tank2":
         var data = MovementPossibilitiesForTank(x, y, 2);
         return data;
-    case "2sniper":
+    case "2sniper0":
+    case "2sniper1":
         var data = MovementPossibilitiesForSniper(x, y, 2);
         return data;
     case "2hero":

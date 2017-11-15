@@ -100,7 +100,7 @@ function VerifyEndGame(){
 function MovementPossibilitiesForBomber(x, y, player){
   var possibilitiesArray = [];
   //f
-  if(x+1 < board[0].length){
+  if(x+1 < board.length){
     un = board[x+1][y];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x+1, y, "move"));
@@ -111,8 +111,8 @@ function MovementPossibilitiesForBomber(x, y, player){
   }
 
   //ff
-  if(x+2 < board[0].length){
-    un = board[x+1][y];
+  if(x+2 < board.length){
+    un = board[x+2][y];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x+2, y, "move"));
     }
@@ -122,8 +122,8 @@ function MovementPossibilitiesForBomber(x, y, player){
   }
 
   //fff
-  if(x+3 < board[0].length){
-    un = board[x+1][y];
+  if(x+3 < board.length){
+    un = board[x+3][y];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x+3, y, "move"));
     }
@@ -145,7 +145,7 @@ function MovementPossibilitiesForBomber(x, y, player){
 
   //bb
   if(x-2 >= 0){
-    un = board[x-1][y];
+    un = board[x-2][y];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x-2, y, "move"));
     }
@@ -155,8 +155,8 @@ function MovementPossibilitiesForBomber(x, y, player){
   }
 
   //bbb
-  if(x-1 >= 0){
-    un = board[x-1][y];
+  if(x-3 >= 0){
+    un = board[x-3][y];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x-3, y, "move"));
     }
@@ -179,7 +179,7 @@ function MovementPossibilitiesForBomber(x, y, player){
 
 
   //d
-  if(y+1 < board.length){
+  if(y+1 < board[0].length){
     un = board[x][y+1];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x, y+1, "move"));
@@ -199,7 +199,7 @@ function MovementPossibilitiesForSniper(x, y, player){
   //tiro diagonal 1
   var possibilitiesArray = [];
   //f
-  if(x+1 < board[0].length){
+  if(x+1 < board.length){
     un = board[x+1][y];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x+1, y, "move"));
@@ -232,8 +232,8 @@ function MovementPossibilitiesForSniper(x, y, player){
   }
 
   //uu
-  if(y-1 >= 0){
-    un = board[x][y-1];
+  if(y-2 >= 0){
+    un = board[x][y-2];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x, y-2, "move"));
     }
@@ -243,8 +243,8 @@ function MovementPossibilitiesForSniper(x, y, player){
   }
 
   //uuu
-  if(y-1 >= 0){
-    un = board[x][y-1];
+  if(y-3 >= 0){
+    un = board[x][y-3];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x, y-3, "move"));
     }
@@ -254,7 +254,7 @@ function MovementPossibilitiesForSniper(x, y, player){
   }
 
   //d
-  if(y+1 < board.length){
+  if(y+1 < board[0].length){
     un = board[x][y+1];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x, y+1, "move"));
@@ -265,18 +265,18 @@ function MovementPossibilitiesForSniper(x, y, player){
   }
 
   //dd
-  if(y+1 < board.length){
-    un = board[x][y+1];
+  if(y+2 < board[0].length){
+    un = board[x][y+2];
     if(un == "nil"){
-      possibilitiesArray.push(new MovementData(x, y+1, "move"));
+      possibilitiesArray.push(new MovementData(x, y+2, "move"));
     }
     else if (GetTeamFromUnit(un) != player){
-      possibilitiesArray.push(new MovementData(x, y+1, "kill"));
+      possibilitiesArray.push(new MovementData(x, y+2, "kill"));
     }
   }
 
   //ddd
-  if(y+3 < board.length){
+  if(y+3 < board[0].length){
     un = board[x][y+3];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x, y+3, "move"));
@@ -292,8 +292,9 @@ function MovementPossibilitiesForSniper(x, y, player){
 //X,y para coordenadas e player 1 ou 2 para saber se pode matar a peça
 function MovementPossibilitiesForTank(x, y, player){
     var possibilitiesArray = new Array();
+    console.log("X: " + board.length + "Y: " + board[0].length);
   //f
-  if(x+1 < board[0].length){
+  if(x+1 < board.length){
     un = board[x+1][y];
     if(un == "nil"){
         possibilitiesArray.push(new MovementData(x + 1, y, "move"));
@@ -326,7 +327,7 @@ function MovementPossibilitiesForTank(x, y, player){
   }
 
   //d
-  if(y+1 < board.length){
+  if(y+1 < board[0].length){
     un = board[x][y+1];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x, y+1, "move"));
@@ -344,7 +345,7 @@ function MovementPossibilitiesForHero(x, y, player){
   //Movimento único nas 8 direcoes
   var possibilitiesArray = [];
   //f
-  if(x+1 < board[0].length){
+  if(x+1 < board.length){
     un = board[x+1][y];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x+1, y, "move"));
@@ -377,7 +378,7 @@ function MovementPossibilitiesForHero(x, y, player){
   }
 
   //d
-  if(y+1 < board.length){
+  if(y+1 < board[0].length){
     un = board[x][y+1];
     if(un == "nil"){
       possibilitiesArray.push(new MovementData(x, y+1, "move"));

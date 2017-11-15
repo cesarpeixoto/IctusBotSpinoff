@@ -27,7 +27,7 @@ UnityObject.prototype.SetBoardPosition = function (PositionX, PositionY, Face)
 {
     //var RenderXPosition = (PositionX - PositionY) * this.IsoOffsetX;
     //var RenderYPosition = (PositionX + PositionY) * this.IsoOffsetY;
-    var RenderPosition = FMath.Parse.ToIsometric(PositionX, PositionY);
+    var RenderPosition = FMath.Parse.ToIsometricRender(PositionX, PositionY);    
     this.GetTransform().SetPosition(RenderPosition[0], RenderPosition[1]);
     
     this.SetFacing(Face);
@@ -57,9 +57,7 @@ UnityObject.prototype.SetFacing = function (Facing)
 
 UnityObject.prototype.SetTargetLocation = function (x, y) 
 {
-    // var TargetPositionX = (x - y) * this.IsoOffsetX;
-    // var TargetPositionY = (x + y) * this.IsoOffsetY;
-    var TargetPosition = FMath.Parse.ToIsometric(x, y);
+    var TargetPosition = FMath.Parse.ToIsometricRender(x, y);
     this.UnityMovement.GoTo(TargetPosition[0], TargetPosition[1]);
 }
 

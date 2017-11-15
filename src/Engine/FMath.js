@@ -84,6 +84,13 @@ FMath.Parse = (function ()
         return vec2.fromValues(IsoXPosition, IsoYPosition);
     }; 
 
+    var ToIsometricRender = function (x, y) 
+    {
+        var IsoXPosition = (x - y) * kIsoOffset.X;
+        var IsoYPosition = ((x + y) * kIsoOffset.Y) + kIsoOffset.Y;        
+        return vec2.fromValues(IsoXPosition, IsoYPosition);
+    }; 
+
     var ToCartesian = function (x, y) 
     {
         var CartesianXPosition = ((x / kIsoOffset.X) + (y / kIsoOffset.Y) / 2);
@@ -158,6 +165,7 @@ FMath.Parse = (function ()
     {
         IsoOffset: kIsoOffset,
         ToIsometric: ToIsometric,
+        ToIsometricRender: ToIsometricRender,
         ToCartesian: ToCartesian,
         PositionToGrid: PositionToGrid,   
         PositionToGridRender: PositionToGridRender,

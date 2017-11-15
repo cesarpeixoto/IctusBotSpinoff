@@ -14,6 +14,9 @@ function GameInstance()
     this.kModernTank = "Assets/ModernTank.png"
     this.kAncientBomber = "Assets/AncientBomber.png"
     this.kModernBomber = "Assets/ModernBomber.png"
+
+    this.kAncientHero = "Assets/AncientSniper.png"
+    this.kModernHero = "Assets/ModernSniper.png"
     
 
     this.kDot = "Assets/Dot.png";
@@ -81,11 +84,11 @@ GameInstance.prototype.Initialize = function ()
 
     
 
+    this.InitializeUnitys();
 
-
-    this.ModernSniper = new UnityObject(this.kModernSniper);
-    this.ModernSniper.SetBoardPosition(0, 0, UnityObject.EFaceing.ELeft);
-    this.ModernSniper.SetTargetLocation(3, 2);
+    // this.ModernSniper = new UnityObject(this.kModernSniper);
+    // this.ModernSniper.SetBoardPosition(0, 0, UnityObject.EFaceing.ELeft);
+    // this.ModernSniper.SetTargetLocation(3, 2);
 
     var DotRender = new SpriteSheetRenderComponent(this.kDot);
     DotRender.SetElementPixelPositions(0, 4, 0, 4);      
@@ -98,7 +101,40 @@ GameInstance.prototype.Initialize = function ()
 
 GameInstance.prototype.InitializeUnitys = function () 
 {
-    //UnitysMap.Add();
+    for(var y = 0; y < board[0].length; y++)
+    {
+        for(var x = 0; x < board.length; x++) 
+        {
+          if(board[x][y] != "nil")
+            this.CreateUnityByID(board[x][y], x, y);
+        }
+      }    
+};
+
+GameInstance.prototype.CreateUnityByID = function (StrId, x, y) 
+{
+    var bIsAncient = StrId.startsWith("1");
+    var Face = (y > 2) ? UnityObject.EFaceing.ERight : UnityObject.EFaceing.ELeft;
+    var UnityRender = null;
+
+    if(StrId.search("sniper") > 0)
+        UnityRender = bIsAncient ? new UnityObject(this.kAncientSniper) : new UnityObject(this.kModernSniper);
+
+    if(StrId.search("tank") > 0)
+        UnityRender = bIsAncient ? new UnityObject(this.kAncientTank) : new UnityObject(this.kModernTank);
+
+    if(StrId.search("bomb") > 0)
+        UnityRender = bIsAncient ? new UnityObject(this.kAncientBomber) : new UnityObject(this.kModernBomber);
+
+    if(StrId.search("hero") > 0)
+        UnityRender = bIsAncient ? new UnityObject(this.kAncientHero) : new UnityObject(this.kModernHero);
+
+    if(UnityRender != null)
+        UnityRender.SetBoardPosition(x, y, Face);
+    else
+        alert("Unidade não reconhecida");
+        
+    this.UnitysMap.Add(UnityRender, StrId);
 };
 
 
@@ -113,7 +149,7 @@ GameInstance.prototype.Render = function ()
     this.Board.Render(this.MainCamera);
     this.Cursor.Render(this.MainCamera);
 
-    this.ModernSniper.Render(this.MainCamera);
+    this.UnitysMap.Render(this.MainCamera);
 
 
     this.Dot.Render(this.MainCamera);
@@ -127,7 +163,7 @@ GameInstance.prototype.Update = function (DeltaTime)
     this.Board.Update(this.MainCamera);
     this.Cursor.Update(this.MainCamera);
 
-    this.ModernSniper.Update(DeltaTime);
+    this.UnitysMap.Update(DeltaTime);
 
 
     var v = IctusBot.DefaultResources.GetGlobalAmbientColor();

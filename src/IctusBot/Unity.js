@@ -41,16 +41,16 @@ UnityObject.prototype.SetFacing = function (Facing)
     switch (Facing) 
     {
     case UnityObject.EFaceing.ELeft:
-        this.UnityRender.SetElementPixelPositions(0, 280, 350, 700);
+        this.UnityRender.SetElementPixelPositions(0, 128, 0, 128);
         break;
     case UnityObject.EFaceing.ERight:
-        this.UnityRender.SetElementPixelPositions(390, 742, 0, 350);
+        this.UnityRender.SetElementPixelPositions(128, 256, 0, 128);
         break;
     case UnityObject.EFaceing.ETop:
-    this.UnityRender.SetElementPixelPositions(0, 280, 0, 350);
+    this.UnityRender.SetElementPixelPositions(0, 128, 128, 256);
         break;
     case UnityObject.EFaceing.EBottom:
-    this.UnityRender.SetElementPixelPositions(350, 742, 350, 700); 
+    this.UnityRender.SetElementPixelPositions(128, 256, 128, 256); 
         break;
     }
 }
@@ -156,6 +156,7 @@ MovementControl.prototype.StartMove = function ()
     else
     {
         this.OwnerObject.GetTransform().SetPosition(this.TargetPosition[0], this.TargetPosition[1]);
+        alert("Acabou o movimento!");
         // Chamar o Callback!!!
     }
 
@@ -166,10 +167,6 @@ MovementControl.prototype.ProcessMovement = function (DeltaTime)
 {
    if(this.Run)
    {
-        // var CurrentTime = new Date().getTime();
-        // var DeltaTime = CurrentTime - this.PreviousTime;
-        // this.PreviousTime = CurrentTime;
-
         this.ElapsedTime += DeltaTime / 1000;
 
         vec2.lerp(this.OwnerObject.GetTransform().GetPosition(), this.StartPosition, 

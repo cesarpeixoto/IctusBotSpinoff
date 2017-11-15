@@ -7,13 +7,24 @@ function GameInstance()
     
     this.kGroundSheet = "Assets/GrassSpriteSheet.png";
     this.kCursorSprite = "Assets/Cursor.png";
-    this.kModernSniper = "Assets/ModSinper.png"
+
+    this.kAncientSniper = "Assets/AncientSniper.png"
+    this.kModernSniper = "Assets/ModernSniper.png"
+    this.kAncientTank = "Assets/AncientTank.png"
+    this.kModernTank = "Assets/ModernTank.png"
+    this.kAncientBomber = "Assets/AncientBomber.png"
+    this.kModernBomber = "Assets/ModernBomber.png"
     
+
     this.kDot = "Assets/Dot.png";
 
 
+    this.UnitysMap = new GameObjectMap();
     this.Board = null;
     this.Cursor = null;
+
+    
+
     this.ModernSniper = null;
 
     this.Dot = null;
@@ -26,17 +37,28 @@ GameInstance.prototype.LoadMap = function ()
     //IctusBot.AudioClips.LoadAudio(musica);
     IctusBot.Textures.LoadTexture(this.kGroundSheet);
     IctusBot.Textures.LoadTexture(this.kCursorSprite);
-    IctusBot.Textures.LoadTexture(this.kModernSniper);
-
-    IctusBot.Textures.LoadTexture(this.kDot);
     
+    IctusBot.Textures.LoadTexture(this.kAncientSniper);
+    IctusBot.Textures.LoadTexture(this.kModernSniper);
+    IctusBot.Textures.LoadTexture(this.kAncientTank);
+    IctusBot.Textures.LoadTexture(this.kModernTank);
+    IctusBot.Textures.LoadTexture(this.kAncientBomber);
+    IctusBot.Textures.LoadTexture(this.kModernBomber);
+
+
+    IctusBot.Textures.LoadTexture(this.kDot);    
 };
 
 GameInstance.prototype.UnloadMap = function () 
 {
     IctusBot.Textures.UnloadTexture(this.kGroundSheet);
     IctusBot.Textures.UnloadTexture(this.kCursorSprite);
+    IctusBot.Textures.UnloadTexture(this.kAncientSniper);
     IctusBot.Textures.UnloadTexture(this.kModernSniper);
+    IctusBot.Textures.UnloadTexture(this.kAncientTank);
+    IctusBot.Textures.UnloadTexture(this.kModernTank);
+    IctusBot.Textures.UnloadTexture(this.kAncientBomber);
+    IctusBot.Textures.UnloadTexture(this.kModernBomber);
 };
 
 GameInstance.prototype.Initialize = function () 
@@ -54,6 +76,13 @@ GameInstance.prototype.Initialize = function ()
     // GlobalAmbientColor[0] -= 0.02;
     IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() + 1.7);
 
+    this.Board = new BoardObject(this.kGroundSheet);
+    this.Cursor = new CursorObject(this.kCursorSprite, this.Board);
+
+    
+
+
+
     this.ModernSniper = new UnityObject(this.kModernSniper);
     this.ModernSniper.SetBoardPosition(0, 0, UnityObject.EFaceing.ELeft);
     this.ModernSniper.SetTargetLocation(3, 2);
@@ -64,8 +93,12 @@ GameInstance.prototype.Initialize = function ()
     DotRender.GetTransform().SetPosition(0, 0); 
     this.Dot = new GameObject(DotRender);
 
-    this.Board = new BoardObject(this.kGroundSheet);
-    this.Cursor = new CursorObject(this.kCursorSprite, this.Board);
+    
+};
+
+GameInstance.prototype.InitializeUnitys = function () 
+{
+    //UnitysMap.Add();
 };
 
 

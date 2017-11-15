@@ -54,3 +54,55 @@ GameObjectArray.prototype.Render = function (RenderCamera)
         this.ObjectArray[i].Render(RenderCamera);
     }
 };
+
+
+
+function GameObjectMap() 
+{
+    this.ObjectArray = [];
+}
+
+GameObjectMap.prototype.Size = function () { return this.ObjectArray.length; };
+
+GameObjectMap.prototype.GetObjectAt = function (ObjIndex) 
+{
+    return this.ObjectArray[ObjIndex].Asset;
+};
+
+GameObjectMap.prototype.GetObjectById = function (IdIndex) 
+{
+    for (var i = 0; i < this.ObjectArray.length; i++) 
+    {
+        if(this.ObjectArray[i].ID == IdIndex)
+            return this.ObjectArray[i].Asset;
+    }
+    alert("Id Inexistente");
+};
+
+GameObjectMap.prototype.Add = function (InGameObject, InId) 
+{
+    this.ObjectArray.push(new GameObjectEntry(InGameObject, InId));
+};
+
+GameObjectMap.prototype.Update = function (DeltaTime) 
+{
+    for (var i = 0; i < this.ObjectArray.length; i++) 
+    {
+        this.ObjectArray[i].Asset.Update(DeltaTime);
+    }
+};
+
+GameObjectMap.prototype.Render = function (RenderCamera) 
+{
+    for (var i = 0; i < this.ObjectArray.length; i++) 
+    {
+        this.ObjectArray[i].Asset.Render(RenderCamera);
+    }
+};
+
+
+function GameObjectEntry (InGameObjectRef, InId) 
+{
+    this.Asset = InGameObjectRef;
+    this.ID = InId;
+}

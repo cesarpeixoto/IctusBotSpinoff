@@ -101,9 +101,8 @@ GameObjectMap.prototype.Render = function (RenderCamera)
 };
 
 
-class GameObjectEntry {
-    constructor(InGameObjectRef, InId) {
-        this.Asset = InGameObjectRef;
-        this.ID = InId;
-    }
+function GameObjectEntry (InGameObjectRef, InId) 
+{
+    this.Asset = InGameObjectRef;
+    this.ID = InId;
 }

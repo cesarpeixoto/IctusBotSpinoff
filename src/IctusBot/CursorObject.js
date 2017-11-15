@@ -14,7 +14,7 @@ function CursorObject(InSpriteTexture, InWorldRef)
     this.CursorRender.GetTransform().SetScale(10, 6);
     this.CursorRender.SetElementPixelPositions(0, 128, 0, 64);
         
-    this.SelectedUnityId = "nil";
+    this.SelectedUnityId = new SelectedUnity();
 
     GameObject.call(this, this.CursorRender);
 }
@@ -31,25 +31,29 @@ CursorObject.prototype.Update = function (InCamera)
     var X = this.WorldRef.GetCurrentXPosition(InCamera);
     var Y = this.WorldRef.GetCurrentYPosition(InCamera);
 
-    if(this.SelectedUnityId != "nil")
+    if(this.SelectedUnityId.ID != "nil")
     {
-        this.CursorRender.SetColor([1, 0, 0, 1]);
-        // Renderizar as possibilidades de jogadas...
-        var Possibilities = GetMovementPossibilities(X, Y, this.SelectedUnityId);
+        var Possibilities = GetMovementPossibilities(this.SelectedUnityId.X, this.SelectedUnityId.Y, this.SelectedUnityId.ID);
+        var ValidPlay = false;
         for (var i = 0; i < Possibilities.length; i++)
         {
             if((X == Possibilities[i].x) && (Y ==  Possibilities[i].y))
             {
-                this.CursorRender.SetColor([0, 0, 1, 0.5]);
+                ValidPlay = true;
+                
             }
-            //alert("X: " + Possibilities[i].x + "Y: " + Possibilities[i].y + "acao: " + Possibilities[i].action);
         }
 
+        if(ValidPlay)
+        {
+            this.CursorRender.SetColor([0, 0, 1, 0.5]);
+        }
+        else
+        {
+            this.CursorRender.SetColor([1, 1, 1, 0.1]);
+        }
     }
-    else
-    {
-        this.CursorRender.SetColor([1, 1, 1, 0.1]);
-    }
+    
 
 
     if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Left))
@@ -61,23 +65,33 @@ CursorObject.prototype.Update = function (InCamera)
         }
 
 
-        if(this.SelectedUnityId == "nil")
+        if(this.SelectedUnityId.ID == "nil")
         {            
             if(InSet != "nil")
             {
                 // CHECA SE A UNIDADE É DO NOSSO TIME... CONFIRMAR COM LUCAS..
                 //if(currentTurn == GetTeamFromUnit(InSet))
                 {
-                    //this.SelectedUnity = this.WorldRef.UnitysMap.GetObjectById(InSet);
-                    this.SelectedUnityId = board[X][Y];
+                    this.SelectedUnityId.ID = board[X][Y];
+                    this.SelectedUnityId.X = X;
+                    this.SelectedUnityId.Y = Y;
+                    this.SelectedUnityId.Asset = this.WorldRef.UnitysMap.GetObjectById(board[X][Y]);
                 }
                 
-            }
-            
-
+            }            
         }
         else
         {
+
+            var Possibilities = GetMovementPossibilities(this.SelectedUnityId.X, this.SelectedUnityId.Y, this.SelectedUnityId.ID);
+            for (var i = 0; i < Possibilities.length; i++)
+            {
+                if((X == Possibilities[i].x) && (Y ==  Possibilities[i].y))
+                {
+                    this.SelectedUnityId.Asset.SetTargetLocation(X, Y);
+                }
+            }
+    
             //alert("Vai fazer acao!!!");
             // var Possibilities = GetMovementPossibilities(X, Y, this.SelectedUnityId);
 
@@ -100,8 +114,17 @@ CursorObject.prototype.Update = function (InCamera)
 
     if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Right))
     {
-        this.SelectedUnityId = "nil";
+        this.SelectedUnityId.ID = "nil";
     }
 
 
+}
+
+
+function SelectedUnity () 
+{
+    this.Asset = null;
+    this.ID = "nil";
+    this.X = 0;
+    this.Y = 0;
 }

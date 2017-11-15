@@ -3,10 +3,10 @@
 
 
 
-function CursorObject(InSpriteTexture, InWorldRef) 
+function CursorObject(InSpriteTexture, InWorldRef, InUnitysMap) 
 {
     this.WorldRef = InWorldRef;
-
+    this.UnitysMap = InUnitysMap;
     this.CursorRender = new SpriteSheetRenderComponent(InSpriteTexture);
     this.CursorRender.SetColor([1, 1, 1, 0.1]);
     this.CursorRender.GetTransform().SetPosition(0, 0);
@@ -75,7 +75,7 @@ CursorObject.prototype.Update = function (InCamera)
                     this.SelectedUnityId.ID = board[X][Y];
                     this.SelectedUnityId.X = X;
                     this.SelectedUnityId.Y = Y;
-                    this.SelectedUnityId.Asset = this.WorldRef.UnitysMap.GetObjectById(board[X][Y]);
+                    this.SelectedUnityId.Asset = this.UnitysMap.GetObjectById(board[X][Y]);
                 }
                 
             }            
@@ -115,6 +115,9 @@ CursorObject.prototype.Update = function (InCamera)
     if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Right))
     {
         this.SelectedUnityId.ID = "nil";
+        this.SelectedUnityId,Asset = null;
+        this.SelectedUnityId.X = -1;
+        this.SelectedUnityId.Y = -1;
     }
 
 
@@ -125,6 +128,6 @@ function SelectedUnity ()
 {
     this.Asset = null;
     this.ID = "nil";
-    this.X = 0;
-    this.Y = 0;
+    this.X = -1;
+    this.Y = -1;
 }

@@ -153,8 +153,7 @@ MovementControl.prototype.StartMove = function ()
     }
     else
     {
-        this.OwnerObject.GetTransform().SetPosition(this.TargetPosition[0], this.TargetPosition[1]);
-        alert("Acabou o movimento!");
+        this.OwnerObject.GetTransform().SetPosition(this.TargetPosition[0], this.TargetPosition[1]);        
         // Chamar o Callback!!!
     }
 

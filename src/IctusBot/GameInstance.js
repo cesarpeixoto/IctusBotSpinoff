@@ -80,7 +80,7 @@ GameInstance.prototype.Initialize = function ()
     IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() + 1.7);
 
     this.Board = new BoardObject(this.kGroundSheet);
-    this.Cursor = new CursorObject(this.kCursorSprite, this.Board);
+    this.Cursor = new CursorObject(this.kCursorSprite, this.Board, this.UnitysMap);
 
     
 

@@ -113,8 +113,7 @@ FMath.Parse = (function ()
     };
 
     var PositionToGridRender = function (x, y)
-    {
-        y += kIsoOffset.Y;
+    {        
         var GridPosition = ToGrid(x, y);
         var RenderPosition = ToIsometric(GridPosition[0], GridPosition[1]);
         RenderPosition[1] += kIsoOffset.Y;

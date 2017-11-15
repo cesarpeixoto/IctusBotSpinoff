@@ -56,9 +56,8 @@ UnityObject.prototype.SetFacing = function (Facing)
 }
 
 UnityObject.prototype.SetTargetLocation = function (x, y) 
-{
-    var TargetPosition = FMath.Parse.ToIsometricRender(x, y);
-    this.UnityMovement.GoTo(TargetPosition[0], TargetPosition[1]);
+{    
+    this.UnityMovement.GoTo(x, y);
 }
 
 UnityObject.prototype.Update = function (DeltaTime) 
@@ -83,10 +82,13 @@ function MovementControl(InGameObject)
     this.ElapsedTime = 0.0;
     this.TargetTime = 0.0;
     this.TargetPosition = vec2.fromValues(0, 0);    
-
+    this.TargetGridPosition = vec2.fromValues(0, 0);
+    
+    this.CurrentTile = vec2.fromValues(0, 0);
     this.bNeedHorizontal = false;
     this.bNeedVertical = false;
-    this.ParcialTargetPosition = vec2.fromValues(0, 0);
+    
+    this.ParcialTargetPosition = vec2.fromValues(0, 0);    
     this.StartPosition;
     this.Run = false;
 
@@ -96,47 +98,52 @@ function MovementControl(InGameObject)
 
 MovementControl.prototype.GoTo = function (TargetX, TargetY)
 {
-    this.TargetPosition[0] = TargetX;
-    this.TargetPosition[1] = TargetY;
+    this.TargetGridPosition[0] = TargetX;
+    this.TargetGridPosition[1] = TargetY;
 
-    this.bNeedVertical = (this.OwnerObject.GetTransform().GetYPosition() != TargetY) ? true : false;
-    this.bNeedHorizontal = (this.OwnerObject.GetTransform().GetXPosition() != TargetX) ? true : false;
+    this.TargetPosition = FMath.Parse.ToIsometricRender(TargetX, TargetY);    
+    this.CurrentTile = FMath.Parse.ToGrid(this.OwnerObject.GetTransform().GetXPosition(), this.OwnerObject.GetTransform().GetYPosition());
+
+    this.bNeedVertical = (this.CurrentTile[1] != TargetY) ? true : false;
+    this.bNeedHorizontal = (this.CurrentTile[0] != TargetX) ? true : false;
     this.StartMove();
 }
 
 MovementControl.prototype.StartMove = function ()
 {
     var LocalPosition = this.OwnerObject.GetTransform().GetPosition();
-    this.StartPosition = vec2.clone(this.OwnerObject.GetTransform().GetPosition());
+    this.StartPosition = vec2.clone(this.OwnerObject.GetTransform().GetPosition());    
+    this.CurrentTile = FMath.Parse.ToGrid(LocalPosition[0], LocalPosition[1]);
+
     if(this.bNeedVertical)
     {   
-        if(LocalPosition[1] > this.TargetPosition[1])
+        if(this.CurrentTile[1] < this.TargetGridPosition[1])
         {
-            this.OwnerObject.SetFacing(UnityObject.EFaceing.EBottom);
+            this.OwnerObject.SetFacing(UnityObject.EFaceing.ELeft);
         }
         else
         {
-            this.OwnerObject.SetFacing(UnityObject.EFaceing.ETop);
+            this.OwnerObject.SetFacing(UnityObject.EFaceing.ERight);            
         }
 
-        this.ParcialTargetPosition[0] = LocalPosition[0];
-        this.ParcialTargetPosition[1] = this.TargetPosition[1];
+        this.ParcialTargetPosition = FMath.Parse.ToIsometricRender(this.CurrentTile[0], this.TargetGridPosition[1]);
         this.bNeedVertical = false;
         this.Run = true;
     }
     else if(this.bNeedHorizontal)
     {       
-        if(LocalPosition[0] > this.TargetPosition[0])
+        if(this.CurrentTile[0] < this.TargetGridPosition[0])
         {
-            this.OwnerObject.SetFacing(UnityObject.EFaceing.ERight);
+            this.OwnerObject.SetFacing(UnityObject.EFaceing.EBottom);
         }
         else
         {
-            this.OwnerObject.SetFacing(UnityObject.EFaceing.ELeft);
+            this.OwnerObject.SetFacing(UnityObject.EFaceing.ETop);                         
         }
 
-        this.ParcialTargetPosition[0] = this.TargetPosition[0];
-        this.ParcialTargetPosition[1] = LocalPosition[1];       
+        this.ParcialTargetPosition = FMath.Parse.ToIsometricRender(this.TargetGridPosition[0], this.CurrentTile[1]);
+        //this.ParcialTargetPosition[0] = this.TargetPosition[0];
+        //this.ParcialTargetPosition[1] = LocalPosition[1];       
         this.bNeedHorizontal = false;
         this.Run = true;
     }

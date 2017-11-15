@@ -89,6 +89,8 @@ CursorObject.prototype.Update = function (InCamera)
                 if((X == Possibilities[i].x) && (Y ==  Possibilities[i].y))
                 {
                     this.SelectedUnityId.Asset.SetTargetLocation(X, Y);
+                    this.SelectedUnityId.X = X;
+                    this.SelectedUnityId.Y = Y;
                 }
             }
     

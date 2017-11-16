@@ -18,7 +18,7 @@ function CursorObject(InSpriteTexture, InWorldRef, InUnitysMap)
 
     GameObject.call(this, this.CursorRender);
 }
-
+var lastFrameMouseState = false;
 IctusBot.Core.InheritPrototype(CursorObject, GameObject);
 
 
@@ -56,8 +56,9 @@ CursorObject.prototype.Update = function (InCamera)
     
 
 
-    if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Left))
+    if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Left) == true && lastFrameMouseState == false)
     {
+        console.log("MEU PAU NA SUA MÃO");
         var InSet = "nil";
         if(X > -1 && Y > -1)
         {
@@ -70,7 +71,7 @@ CursorObject.prototype.Update = function (InCamera)
             if(InSet != "nil")
             {
                 // CHECA SE A UNIDADE É DO NOSSO TIME... CONFIRMAR COM LUCAS..
-                //if(currentTurn == GetTeamFromUnit(InSet))
+                if(currentTurn == GetTeamFromUnit(InSet))
                 {
                     this.SelectedUnityId.ID = board[X][Y];
                     this.SelectedUnityId.X = X;
@@ -88,9 +89,13 @@ CursorObject.prototype.Update = function (InCamera)
             {
                 if((X == Possibilities[i].x) && (Y ==  Possibilities[i].y))
                 {
+                    MoveUnitTo(SelectedUnityId.X, SelectedUnityId.Y, X, Y);
                     this.SelectedUnityId.Asset.SetTargetLocation(X, Y);
-                    this.SelectedUnityId.X = X;
-                    this.SelectedUnityId.Y = Y;
+                    this.CursorRender.SetColor([1, 1, 1, 0.1]);
+                    this.SelectedUnityId.ID = "nil";
+                    this.SelectedUnityId.Asset = null;
+                    this.SelectedUnityId.X = -1;
+                    this.SelectedUnityId.Y = -1;
                 }
             }
     
@@ -122,7 +127,7 @@ CursorObject.prototype.Update = function (InCamera)
         this.SelectedUnityId.Y = -1;
     }
 
-
+    lastFrameMouseState = IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Left);
 }
 
 

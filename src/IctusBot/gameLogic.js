@@ -68,6 +68,9 @@ function GetMovementPossibilities(x, y, unit){
 function MoveUnitTo(fromX, fromY, toX, toY, unit){
   board[fromX][fromY] = "nil";
   board[toX][toY] = unit;
+
+  currentTurn = currentTurn == 1 ? 2 : 1;
+  VerifyEndGame();
 }
 
 //Verifica se acabou o jogo
@@ -292,7 +295,6 @@ function MovementPossibilitiesForSniper(x, y, player){
 //X,y para coordenadas e player 1 ou 2 para saber se pode matar a peça
 function MovementPossibilitiesForTank(x, y, player){
     var possibilitiesArray = new Array();
-    console.log("X: " + board.length + "Y: " + board[0].length);
   //f
   if(x+1 < board.length){
     un = board[x+1][y];

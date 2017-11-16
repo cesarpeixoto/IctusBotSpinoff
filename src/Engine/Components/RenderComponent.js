@@ -158,7 +158,7 @@ function AnimatedSpriteRenderComponent(InTexture)
 
     this.CurrentAnimAdvance = -1;
     this.CurrentFrame = 0;
-    this.InitAnimation();
+    //this.InitAnimation();
 }
 
 IctusBot.Core.InheritPrototype(AnimatedSpriteRenderComponent, SpriteSheetRenderComponent);
@@ -169,8 +169,7 @@ AnimatedSpriteRenderComponent.EAnimationType = Object.freeze(
     EAnimateRight: 0,     
     EAnimateLeft: 1,      
     EAnimateSwing: 2,
-    EAnimateTop: 3,   
-    EAnimateDown: 4
+    EAnimateStoped: 3
 });
 
 
@@ -191,6 +190,10 @@ AnimatedSpriteRenderComponent.prototype.InitAnimation = function ()
     case AnimatedSpriteRenderComponent.EAnimationType.EAnimateLeft:
         this.CurrentFrame = this.NumberFrames - 1;
         this.CurrentAnimAdvance = -1; 
+        break;
+    case AnimatedSpriteRenderComponent.EAnimationType.EAnimateStoped:
+        this.CurrentFrame = 0;
+        this.CurrentAnimAdvance = 0; 
         break;
     }
     this.SetSpriteFrame();
@@ -253,5 +256,33 @@ AnimatedSpriteRenderComponent.prototype.UpdateAnimation = function ()
             this.InitAnimation();
         }
     }
+};
+
+
+
+function LightRenderComponent(InTexture) 
+{
+    AnimatedSpriteRenderComponent.call(this, InTexture);
+    RenderComponent.prototype.SetShader.call(this, IctusBot.DefaultResources.GetLightShader());
+
+    this.Lights = [];
+}
+
+IctusBot.Core.InheritPrototype(LightRenderComponent, AnimatedSpriteRenderComponent);
+
+LightRenderComponent.prototype.Render = function (InCamera) 
+{
+    this.Shader.SetLight(this.Light);
+    AnimatedSpriteRenderComponent.prototype.Render.call(this, InCamera);
+};
+
+LightRenderComponent.prototype.GetLightAt = function (InIndex) 
+{
+    return this.Lights[InIndex];
+};
+
+LightRenderComponent.prototype.AddLight = function (InLight) 
+{
+    this.Lights.push(InLight);
 };
 

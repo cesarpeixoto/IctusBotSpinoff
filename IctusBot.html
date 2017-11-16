@@ -2,60 +2,23 @@
 <html>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <head>
-        <title>SPACE HERO</title>        
-        <!-- <script src="game.js"></script>
-        <script src="graphics.js"></script> 
-        <script src="input.js"></script>
-        <script src="player.js"></script>
-        <script src="backgroud.js"></script>
-        <script src="shoot.js"></script>
-        <script src="enemy.js"></script>
-        <script src="collision.js"></script>
-        <script src="animatedsprite.js"></script>
-        <script src="gameover.js"></script> -->
-        
-        
+        <title>ICTUS BOT</title>              
     </head>
+
  	<style>
 	#GLCanvas {
 	position: absolute;
 	display: block;
 	width:     99%;
 	height:    99%;
-}
+    }
     </style>
-    
-	<!-- <body>
-		<canvas id="GLCanvas" width="1280" height="720"></canvas>        
-		<script language="javascript">      
 
-        var canvas = document.getElementById("GLCanvas");
-
-        var gl = canvas.getContext("webgl") ||
-            canvas.getContext("experimental-webgl");
-        
-        if (gl !== null) {
-            gl.clearColor(0.0, 0.8, 0.0, 1.0);  // set the color to be cleared
-            gl.clear(gl.COLOR_BUFFER_BIT);      // clear the colors
-        }
-        document.write("<br><b>The above is WebGL draw area!</b>");
-
-
-		// para dimencionar o canvas de acordo com a janela - http://stackoverflow.com/questions/1664785/resize-html5-canvas-to-fit-window
-        /* var canvas = document.getElementById("Canvas");
-        var context = canvas.getContext("2d");
-        var graphics = new Graphics(context);                 // cria instancia de graphics          
-        var game = new Game(graphics);                        // cria instancia de game
-        game.run();                                           // inicia o jogo            */                                               
-		
-		</script>
-    </body> -->
-    
     <body onload="
         var IctusBotInstance = new GameInstance();
         IctusBot.Core.InitializeSystems('GLCanvas', IctusBotInstance);">
 
-        <script type="text/javascript" src="src/Libs/gl-matrix.js"></script>
+            <script type="text/javascript" src="src/Libs/gl-matrix.js"></script>
             <script type="text/javascript" src="src/Engine/IctusBot_Core.js"></script>
             <script type="text/javascript" src="src/Engine/IctusBot_Renderer.js"></script>
             <script type="text/javascript" src="src/Engine/IctusBot_Input.js"></script>
@@ -65,23 +28,18 @@
             <script type="text/javascript" src="src/Engine/FMath.js"></script>
             <script type="text/javascript" src="src/Engine/CameraObject.js"></script>
             <script type="text/javascript" src="src/Engine/MapInterface.js"></script>
-            <script type="text/javascript" src="src/Engine/GameObject.js"></script>            
+            <script type="text/javascript" src="src/Engine/GameObject.js"></script> 
+            <script type="text/javascript" src="src/Engine/LightObject.js"></script>           
 
             <script type="text/javascript" src="src/IctusBot/GameInstance.js"></script>
             <script type="text/javascript" src="src/IctusBot/MapFileParser.js"></script>
             <script type="text/javascript" src="src/IctusBot/BoardObject.js"></script>
             <script type="text/javascript" src="src/IctusBot/CursorObject.js"></script>
             <script type="text/javascript" src="src/IctusBot/Unity.js"></script>
+            <script type="text/javascript" src="src/IctusBot/HeroObject.js"></script>            
             <script type="text/javascript" src="src/IctusBot/movementData.js"></script>
-            <script type="text/javascript" src="src/IctusBot/gameLogic.js"></script>
-        
-        <canvas id="GLCanvas" width="1920" height="1080">
-        </canvas>            
+            <script type="text/javascript" src="src/IctusBot/gameLogic.js"></script>        
+        <canvas id="GLCanvas" width="1920" height="1080"></canvas>            
     </body>
-
-
-
-
-
 
 </html>

@@ -206,7 +206,7 @@ HeroMovementControl.prototype.StartMove = function ()
         var DeltaDistance = vec2.distance(LocalPosition, this.ParcialTargetPosition);
         this.TargetTime = DeltaDistance / this.OwnerObject.Speed;
         this.ElapsedTime = 0.0;
-        OwnerObject.SetAnimationType(AnimatedSpriteRenderComponent.EAnimationType.EAnimateSwing);
+        this.OwnerObject.HeroRender.SetAnimationType(AnimatedSpriteRenderComponent.EAnimationType.EAnimateSwing);
     }
     else
     {

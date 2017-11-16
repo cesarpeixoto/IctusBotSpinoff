@@ -75,7 +75,9 @@ GameInstance.prototype.Initialize = function ()
 
     // var GlobalAmbientColor = IctusBot.DefaultResources.GetGlobalAmbientColor();
     // GlobalAmbientColor[0] -= 0.02;
-    //IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() + 1.7);
+    IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() + 1.7);
+
+    this.InitializeLights();
 
     // this.MainLight = new LightObject();
     // this.MainLight.SetRadius(8);
@@ -84,9 +86,9 @@ GameInstance.prototype.Initialize = function ()
     // this.MainLight.SetYPosition(30);  
     // this.MainLight.SetColor([0.9, 0.9, 0.2, 1]);
 
-    this.Board = new BoardObject(this.kGroundSheet);
+    this.Board = new BoardObject(this.kGroundSheet, this);
     this.Cursor = new CursorObject(this.kCursorSprite, this.Board, this.UnitysMap);
-    this.InitializeLights();
+    
     
     this.InitializeUnitys();
 
@@ -199,7 +201,7 @@ GameInstance.prototype.Update = function (DeltaTime)
 
 
 
-GameInstance.prototype.CreateALight = function (InPosition, Color, Near, Far, Intensity, Radius) 
+GameInstance.prototype.CreateALight = function (InPosition, Color, Near, Far, Intensity) 
 {
     var Light = new LightObject();
     Light.SetColor(Color);
@@ -207,8 +209,7 @@ GameInstance.prototype.CreateALight = function (InPosition, Color, Near, Far, In
     Light.SetYPosition(InPosition[1]);
     Light.SetZPosition(InPosition[2]);
     Light.SetNear(Near);
-    Light.SetFar(Far);
-    Light.SetRadius(Radius);
+    Light.SetFar(Far);    
     Light.SetIntensity(Intensity);
 
     return Light;
@@ -218,13 +219,13 @@ GameInstance.prototype.InitializeLights = function ()
 {
     this.GlobalLightSet = new LightSet();
 
-    var Light = this.CreateALight([21, 58, 5], [0.2, 0.2, 0.8, 1], 20, 50, 5.5, 5);
+    var Light = this.CreateALight([21, 58, 5], [0.2, 0.2, 0.8, 1], 20, 50, 5.5);
     this.GlobalLightSet.AddToSet(Light);
-    Light = this.CreateALight([24, 24, 8], [0.4, 0.7, 0.4, 1], 20, 45, 2.8, 5);
+    Light = this.CreateALight([24, 24, 8], [0.4, 0.7, 0.4, 1], 20, 45, 2.8);
     this.GlobalLightSet.AddToSet(Light);
-    Light = this.CreateALight([66, 23, 10], [0.7, 0.7, 0.7, 1], 10, 35, 3,5);
+    Light = this.CreateALight([66, 23, 10], [0.7, 0.7, 0.7, 1], 10, 35);
     this.GlobalLightSet.AddToSet(Light);
-    Light = this.CreateALight([0, 0, 2], [0.8, 0.8, 0.8, 1], 15, 40, 10, 10);
+    Light = this.CreateALight([0, 0, 2], [0.8, 0.8, 0.8, 1], 15, 40, 10);
     this.GlobalLightSet.AddToSet(Light);
 };
 

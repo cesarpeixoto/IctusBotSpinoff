@@ -2,11 +2,11 @@
 
 
 
-function BoardObject(InSpriteTexture) 
+function BoardObject(InSpriteTexture, InWorld) 
 {    
     this.kSpriteTextures = InSpriteTexture;
     this.BoardSprites = [];
-    
+    this.WorldRef = InWorld;
     this.IsoOffsetX = 6.4;
     this.IsoOffsetY = -3.2;
 
@@ -24,11 +24,17 @@ BoardObject.prototype =
         var RandomX = Math.floor(Math.random() * 3);
         var RandomY = Math.floor(Math.random() * 3);
 
-        var RandomRender = new SpriteSheetRenderComponent(this.kSpriteTextures);
+        var RandomRender = new LightRenderComponent(this.kSpriteTextures);
         RandomRender.SetColor([1, 1, 1, 0]);
         RandomRender.GetTransform().SetScale(12.8, 6.4);
         RandomRender.GetTransform().SetPosition(0, 0);
         RandomRender.SetElementPixelPositions((RandomX * 616),  (RandomX + 1) * 616, (RandomY * 309) + 97, ((RandomY +1)* 309) +97);
+
+        for (var i = 0; i < this.WorldRef.GlobalLightSet.NumLights(); ++i) 
+        {
+            RandomRender.AddLight(this.WorldRef.GlobalLightSet.GetLightAt(i));   
+        }
+
         return RandomRender;
     },
 

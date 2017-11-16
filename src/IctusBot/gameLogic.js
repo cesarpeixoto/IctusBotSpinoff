@@ -82,10 +82,10 @@ function VerifyEndGame(){
 
   for(var i = 0; i < board[0].length; i++){
     for(var j = 0; j < board.length; j++) {
-      if(board[i][j] == "1hero"){
+      if(board[j][i] == "1hero"){
         hero1 = true;
       }
-      else if(board[i][j] == "2hero"){
+      else if(board[j][i] == "2hero"){
         hero2 = true;
       }
     }

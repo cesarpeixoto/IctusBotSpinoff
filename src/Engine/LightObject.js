@@ -7,7 +7,7 @@ function LightObject()
     this.Near = 5;  
     this.Far = 10;  
     this.mIntensity = 1 
-    this.Radius = 10;  
+    //this.Radius = 10;  
     this.IsOn = true;
 }
 
@@ -26,8 +26,8 @@ LightObject.prototype.SetFar = function (NewFar) { this.Far = NewFar; };
 LightObject.prototype.GetFar = function () { return this.Far; };
 LightObject.prototype.SetIntensity = function (NewIntensity) { this.Intensity = NewIntensity; };
 LightObject.prototype.GetIntensity = function () { return this.Intensity; };
-LightObject.prototype.SetRadius = function (NewRadius) { this.Radius = NewRadius; };
-LightObject.prototype.GetRadius = function () { return this.Radius; };
+//LightObject.prototype.SetRadius = function (NewRadius) { this.Radius = NewRadius; };
+//LightObject.prototype.GetRadius = function () { return this.Radius; };
 LightObject.prototype.SetLightTo = function (InIsOn) { this.IsOn = InIsOn; };
 LightObject.prototype.IsLightOn = function () { return this.IsOn; };
 

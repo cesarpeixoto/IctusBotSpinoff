@@ -23,7 +23,6 @@ function GameSetup() {
 //Passe x e y como coordenadas, e unit sendo o valor da célula da matriz board
 //Retorna um array de MovementData
 function GetMovementPossibilities(x, y, unit) {
-    console.log(unit);
   switch(unit) {
     case "1bomb0":
     case "1bomb1":

@@ -22,7 +22,8 @@ function GameSetup() {
 
 //Passe x e y como coordenadas, e unit sendo o valor da célula da matriz board
 //Retorna um array de MovementData
-function GetMovementPossibilities(x, y, unit){
+function GetMovementPossibilities(x, y, unit) {
+    console.log(unit);
   switch(unit) {
     case "1bomb0":
     case "1bomb1":
@@ -80,12 +81,12 @@ function VerifyEndGame(){
   var hero1 = false;
   var hero2 = false;
 
-  for(var i = 0; i < board[0].length; i++){
-    for(var j = 0; j < board.length; j++) {
-      if(board[j][i] == "1hero"){
+  for(var i = 0; i < board.length; i++){
+    for(var j = 0; j < board[0].length; j++) {
+      if(this.board[i][j] == "1hero"){
         hero1 = true;
       }
-      else if(board[j][i] == "2hero"){
+      else if(board[i][j] == "2hero"){
         hero2 = true;
       }
     }

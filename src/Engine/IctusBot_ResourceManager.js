@@ -448,11 +448,13 @@ IctusBot.Textures = (function ()
 IctusBot.DefaultResources = (function () 
 {
     var kSimpleVS = "src/Shaders/SimpleVS.glsl";  
-    var kSimpleFS = "src/Shaders/SimpleFS.glsl";  
-    var _ConstColorShader = null;
-
+    var kSimpleFS = "src/Shaders/SimpleFS.glsl";      
     var kTextureVS = "src/Shaders/TextureVertexShader.glsl";  
     var kTextureFS = "src/Shaders/TextureFragmentShader.glsl";  
+    var kLightFS = "src/Shaders/LightFS.glsl";  
+    
+    var _ConstColorShader = null;
+    var _LightShader = null;
     var _TextureShader = null;
     var _SpriteSheetShader = null;
 
@@ -462,6 +464,7 @@ IctusBot.DefaultResources = (function ()
     var GetConstColorShader = function () { return _ConstColorShader; };
     var GetTextureShader = function () { return _TextureShader; };
     var GetSpriteSheetShader = function () { return _SpriteSheetShader; };
+    var GetLightShader = function () { return _LightShader; };
 
     var GetGlobalAmbientIntensity = function () { return _GlobalAmbientIntensity; };
     var SetGlobalAmbientIntensity = function (v) { _GlobalAmbientIntensity = v; };
@@ -475,6 +478,7 @@ IctusBot.DefaultResources = (function ()
         _ConstColorShader = new SimpleShader(kSimpleVS, kSimpleFS);
         _TextureShader = new TextureShader(kTextureVS, kTextureFS);
         _SpriteSheetShader =  new SpriteShader(kTextureVS, kTextureFS);
+        _LightShader = new LightShader(kTextureVS, kLightFS);
         CallBackFunction();
     };
 
@@ -486,7 +490,24 @@ IctusBot.DefaultResources = (function ()
         IctusBot.TextFileLoader.LoadTextFile(kTextureVS, IctusBot.TextFileLoader.ETextFileType.ETextFile);
         IctusBot.TextFileLoader.LoadTextFile(kTextureFS, IctusBot.TextFileLoader.ETextFileType.ETextFile);
         
+        IctusBot.TextFileLoader.LoadTextFile(kLightFS, IctusBot.TextFileLoader.ETextFileType.ETextFile);
+
         IctusBot.ResourceManager.SetLoadCompleteCallback(function () { CreateShaders(CallBackFunction); });
+    };
+
+    var CleanUp = function () 
+    {
+        _ConstColorShader.CleanUp();
+        _LightShader.CleanUp(); 
+        _TextureShader.CleanUp();
+        _SpriteSheetShader.CleanUp();
+
+        IctusBot.TextFileLoader.UnloadTextFile(kSimpleVS);
+        IctusBot.TextFileLoader.UnloadTextFile(kSimpleFS);
+        IctusBot.TextFileLoader.UnloadTextFile(kTextureVS);
+        IctusBot.TextFileLoader.UnloadTextFile(kTextureFS);
+        IctusBot.TextFileLoader.UnloadTextFile(kLineFS);
+        IctusBot.TextFileLoader.UnloadTextFile(kLightFS);
     };
 
     var PublicScope = 
@@ -497,8 +518,10 @@ IctusBot.DefaultResources = (function ()
         GetSpriteSheetShader: GetSpriteSheetShader,
         GetGlobalAmbientColor: GetGlobalAmbientColor,
         SetGlobalAmbientColor: SetGlobalAmbientColor,
+        GetLightShader: GetLightShader,
         GetGlobalAmbientIntensity: GetGlobalAmbientIntensity,
-        SetGlobalAmbientIntensity: SetGlobalAmbientIntensity
+        SetGlobalAmbientIntensity: SetGlobalAmbientIntensity,
+        CleanUp: CleanUp
     };
 
     return PublicScope;

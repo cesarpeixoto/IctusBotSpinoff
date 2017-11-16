@@ -2,7 +2,7 @@
 "use strict";
 
 
-function CameraObject(InWCCenter, InWCWidth, ViewportArray) 
+function CameraObject(InWCCenter, InWCWidth, ViewportArray, Bound) 
 {    
     this.CameraState = new CameraState(InWCCenter, InWCWidth);
     this.CameraShake = null;
@@ -17,6 +17,8 @@ function CameraObject(InWCCenter, InWCWidth, ViewportArray)
     this.VPMatrix = mat4.create();
 
     this.BackgroundColor = [0.8, 0.8, 0.8, 1]; 
+
+    this.RenderCache = new PerRenderCache();
 }
 
 CameraObject.EViewport = Object.freeze({ EOrgX: 0, EOrgY: 1, EWidth: 2,EHeight: 3 });
@@ -86,6 +88,28 @@ CameraObject.prototype =
         mat4.ortho(this.ProjMatrix, -halfWCWidth, halfWCWidth, -halfWCHeight, halfWCHeight, this.NearPlane, this.FarPlane);
 
         mat4.multiply(this.VPMatrix, this.ProjMatrix, this.ViewMatrix);
+
+        this.RenderCache.WCToPixelRatio = this.Viewport[CameraObject.EViewport.EWidth] / this.GetWCWidth();
+        this.RenderCache.CameraOrgX = Center[0] - (this.GetWCWidth() / 2);
+        this.RenderCache.CameraOrgY = Center[1] - (this.GetWCHeight() / 2);
+    },
+
+    FakeZInPixelSpace: function (InZ) 
+    {
+        return InZ * this.RenderCache.WCToPixelRatio;
+    },
+    
+    WCPosToPixel: function (InPixel) 
+    {         
+        var x = this.Viewport[CameraObject.EViewport.EOrgX] + ((InPixel[0] - this.RenderCache.CameraOrgX) * this.RenderCache.WCToPixelRatio) + 0.5;
+        var y = this.Viewport[CameraObject.EViewport.EOrgY] + ((InPixel[1] - this.RenderCache.CameraOrgY) * this.RenderCache.WCToPixelRatio) + 0.5;
+        var z = this.FakeZInPixelSpace(InPixel[2]);
+        return vec3.fromValues(x, y, z);
+    },
+    
+    WCSizeToPixel: function (NewSize) 
+    {   
+        return (NewSize * this.RenderCache.WCToPixelRatio) + 0.5;
     },
 
     MouseDCX: function () 
@@ -177,6 +201,13 @@ CameraObject.prototype =
 
 }
 
+function PerRenderCache() 
+{
+    this.WCToPixelRatio = 1;  
+    this.CameraOrgX = 1; 
+    this.CameraOrgY = 1;
+}
+
 
 function CameraState(InCenter, InWidth) 
 {
@@ -203,7 +234,6 @@ CameraState.prototype.ConfigInterpolation = function (Stiffness, Duration)
     this.Center.ConfigInterpolation(Stiffness, Duration);
     this.Width.ConfigInterpolation(Stiffness, Duration);
 };
-
 
 
 

@@ -4,7 +4,7 @@
 
 function UnityObject(InSpriteTexture) 
 {
-    this.UnityRender = new SpriteSheetRenderComponent(InSpriteTexture);
+    this.UnityRender = new LightRenderComponent(InSpriteTexture);
     this.UnityRender.SetColor([1, 1, 1, 0.1]);
     this.UnityRender.GetTransform().SetPosition(0, 0);
     this.UnityRender.GetTransform().SetScale(5.8, 7);

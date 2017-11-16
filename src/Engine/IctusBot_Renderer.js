@@ -332,3 +332,110 @@ SpriteShader.prototype.SetTextureCoordinate = function (TexCoord)
     glContext.bindBuffer(glContext.ARRAY_BUFFER, this.TexCoordBuffer);
     glContext.bufferSubData(glContext.ARRAY_BUFFER, 0, new Float32Array(TexCoord));
 };
+
+
+
+
+function LightShader(VertexShaderPath, FragmentShaderPath) 
+{
+    SpriteShader.call(this, VertexShaderPath, FragmentShaderPath);
+
+    this.Lights = null;
+    
+    this.kGLSLuLightArraySize = 4;  // <-- make sure this is the same as LightFS.glsl
+    this.ShaderLights = [];
+
+    var NewShaderLight;
+    for (var i = 0; i < this.kGLSLuLightArraySize; i++) 
+    {
+        NewShaderLight = new ShaderLightAtIndex(this.CompiledShader, i);
+        this.ShaderLights.push(NewShaderLight);
+    }
+}
+
+IctusBot.Core.InheritPrototype(LightShader, SpriteShader);
+
+LightShader.prototype.ActivateShader = function (PixelColor, InCamera) 
+{
+    SpriteShader.prototype.ActivateShader.call(this, PixelColor, InCamera);
+
+    var NumLight = 0;
+    if (this.Lights !== null) 
+    {
+        while (numLight < this.Lights.length) 
+        {
+            this.ShaderLights[NumLight].LoadToShader(InCamera, this.Lights[NumLight]);
+            NumLight++;
+        }
+    }
+    
+    while (NumLight < this.kGLSLuLightArraySize) 
+    {
+        this.ShaderLights[NumLight].SwitchOffLight(); 
+        NumLight++;
+    }
+};
+
+LightShader.prototype.SetLight = function (InLight) 
+{
+    this.Light = InLight;
+};
+
+// LightShader.prototype.LoadToShader = function (InCamera) 
+// {
+//     var glContext = IctusBot.Renderer.GetContext();
+//     glContext.uniform1i(this.IsOnRef, this.Light.IsLightOn());
+//     if (this.Light.IsLightOn()) 
+//     {
+//         var p = InCamera.WCPosToPixel(this.Light.GetPosition());
+//         var r = InCamera.WCSizeToPixel(this.Light.GetRadius());
+//         var c = this.Light.GetColor();
+
+//         glContext.uniform4fv(this.ColorRef, c);
+//         glContext.uniform3fv(this.PosRef, vec3.fromValues(p[0], p[1], p[2]));
+//         glContext.uniform1f(this.RadiusRef, r);
+//     }
+// };
+
+
+function ShaderLightAtIndex(Shader, InIndex) 
+{
+    this.SetShaderReferences(Shader, InIndex);
+}
+
+ShaderLightAtIndex.prototype.LoadToShader = function (InCamera, InLight) 
+{
+    var glContext = IctusBot.Renderer.GetContext();
+    glContext.uniform1i(this.IsOnRef, InLight.isLightOn());
+    if (InLight.IsLightOn()) 
+    {
+        var p = InCamera.WCPosToPixel(InLight.GetPosition());
+        var ic = InCamera.WCSizeToPixel(InLight.GetNear());
+        var oc = InCamera.WCSizeToPixel(InLight.GetFar());
+        var c = InLight.GetColor();
+
+        glContext.uniform4fv(this.ColorRef, c);
+        glContext.uniform3fv(this.PosRef, vec3.fromValues(p[0], p[1], p[2]));
+        glContext.uniform1f(this.NearRef, ic);
+        glContext.uniform1f(this.FarRef, oc);
+        glContext.uniform1f(this.IntensityRef, InLight.GetIntensity());
+    }
+};
+
+ShaderLightAtIndex.prototype.SwitchOffLight = function () 
+{
+    var glContext = IctusBot.Renderer.GetContext();
+    glContext.uniform1i(this.IsOnRef, false);
+};
+
+ShaderLightAtIndex.prototype.SetShaderReferences = function (InLightShader, InIndex) 
+{
+    var glContext = IctusBot.Renderer.GetContext();
+
+    this.ColorRef = glContext.getUniformLocation(InLightShader,      "uLights[" + InIndex + "].Color");
+    this.PosRef = glContext.getUniformLocation(InLightShader,        "uLights[" + InIndex + "].Position");
+    this.NearRef = glContext.getUniformLocation(InLightShader,       "uLights[" + InIndex + "].Near");
+    this.FarRef = glContext.getUniformLocation(InLightShader,        "uLights[" + InIndex + "].Far");
+    this.IntensityRef = glContext.getUniformLocation(InLightShader,  "uLights[" + InIndex + "].Intensity");
+    this.IsOnRef = glContext.getUniformLocation(InLightShader,       "uLights[" + InIndex + "].IsOn");
+};

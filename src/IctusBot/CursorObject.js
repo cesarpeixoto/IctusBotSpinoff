@@ -89,7 +89,7 @@ CursorObject.prototype.Update = function (InCamera)
             {
                 if((X == Possibilities[i].x) && (Y ==  Possibilities[i].y))
                 {
-                    MoveUnitTo(SelectedUnityId.X, SelectedUnityId.Y, X, Y);
+                    MoveUnitTo(this.SelectedUnityId.X, this.SelectedUnityId.Y, X, Y);
                     this.SelectedUnityId.Asset.SetTargetLocation(X, Y);
                     this.CursorRender.SetColor([1, 1, 1, 0.1]);
                     this.SelectedUnityId.ID = "nil";

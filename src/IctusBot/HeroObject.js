@@ -211,7 +211,7 @@ HeroMovementControl.prototype.StartMove = function ()
     else
     {
         this.OwnerObject.GetTransform().SetPosition(this.TargetPosition[0], this.TargetPosition[1]);
-        OwnerObject.SetAnimationType(AnimatedSpriteRenderComponent.EAnimationType.EAnimateStoped);        
+        this.OwnerObject.HeroRender.SetAnimationType(AnimatedSpriteRenderComponent.EAnimationType.EAnimateStoped);        
         // Chamar o Callback!!!
     }
 

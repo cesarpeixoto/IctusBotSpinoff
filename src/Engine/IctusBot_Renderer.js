@@ -342,7 +342,7 @@ function LightShader(VertexShaderPath, FragmentShaderPath)
 
     this.Lights = null;
     
-    this.kGLSLuLightArraySize = 4;  // <-- make sure this is the same as LightFS.glsl
+    this.kGLSLuLightArraySize = 4;  // tem que ser o mesmo no shader... se não da pau
     this.ShaderLights = [];
 
     var NewShaderLight;
@@ -362,7 +362,7 @@ LightShader.prototype.ActivateShader = function (PixelColor, InCamera)
     var NumLight = 0;
     if (this.Lights !== null) 
     {
-        while (numLight < this.Lights.length) 
+        while (NumLight < this.Lights.length) 
         {
             this.ShaderLights[NumLight].LoadToShader(InCamera, this.Lights[NumLight]);
             NumLight++;

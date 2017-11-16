@@ -75,7 +75,7 @@ GameInstance.prototype.Initialize = function ()
 
     // var GlobalAmbientColor = IctusBot.DefaultResources.GetGlobalAmbientColor();
     // GlobalAmbientColor[0] -= 0.02;
-    IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() + 1.7);
+    //IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() + 1.7);
 
     this.InitializeLights();
 

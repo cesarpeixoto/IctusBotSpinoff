@@ -11,11 +11,11 @@ function RenderComponent()
     this.Color = [1, 1, 1, 1];
 }
 
-RenderComponent.prototype =
-{
+//RenderComponent.prototype =
+//{
     //-----------------------------------------------------------------------------------------------------------------------------
     // Executa renderização do shader
-    Render: function(RenderCamera)
+    RenderComponent.prototype.Render = function(RenderCamera)
     {
         var glContext = IctusBot.Renderer.GetContext();
         this.Shader.ActivateShader(this.Color, RenderCamera);  // always activate the shader first!
@@ -25,20 +25,20 @@ RenderComponent.prototype =
 
     //-----------------------------------------------------------------------------------------------------------------------------
     // Retorna o componente Transform
-    GetTransform: function () { return this.Transform; },
+    RenderComponent.prototype.GetTransform = function () { return this.Transform; },
 
     //-----------------------------------------------------------------------------------------------------------------------------
     // Determina a cor do shader
-    SetColor: function (Color) { this.Color = Color; },
+    RenderComponent.prototype.SetColor = function (Color) { this.Color = Color; },
 
     //-----------------------------------------------------------------------------------------------------------------------------
     // Retorna a cor do shader
-    GetColor: function () { return this.Color; },
+    RenderComponent.prototype.GetColor = function () { return this.Color; },
     
     //-----------------------------------------------------------------------------------------------------------------------------
     // Determina o shader
-    SetShader: function (InShader) { this.Shader = InShader; }
-}
+    RenderComponent.prototype.SetShader = function (InShader) { this.Shader = InShader; }
+//}
 
 
 //=================================================================================================================================
@@ -158,7 +158,7 @@ function AnimatedSpriteRenderComponent(InTexture)
 
     this.CurrentAnimAdvance = -1;
     this.CurrentFrame = 0;
-    //this.InitAnimation();
+    this.InitAnimation();
 }
 
 IctusBot.Core.InheritPrototype(AnimatedSpriteRenderComponent, SpriteSheetRenderComponent);
@@ -272,7 +272,9 @@ IctusBot.Core.InheritPrototype(LightRenderComponent, AnimatedSpriteRenderCompone
 
 LightRenderComponent.prototype.Render = function (InCamera) 
 {
-    this.Shader.SetLight(this.Light);
+    /////// MUDAR AQUI!!!!!!!!!!!!!
+    this.Shader.SetLight(this.Lights);
+    //this.Shader.SetLight(null);
     AnimatedSpriteRenderComponent.prototype.Render.call(this, InCamera);
 };
 

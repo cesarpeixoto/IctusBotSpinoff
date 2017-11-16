@@ -2,12 +2,31 @@
 "use strict";
 
 
+
+
+function PerRenderCache() 
+{
+    this.WCToPixelRatio = 1;  
+    this.CameraOrgX = 1; 
+    this.CameraOrgY = 1;
+}
+
 function CameraObject(InWCCenter, InWCWidth, ViewportArray, Bound) 
 {    
     this.CameraState = new CameraState(InWCCenter, InWCWidth);
     this.CameraShake = null;
+
+    this.Viewport = [];  
+    this.ViewportBound = 0;
+    if (Bound !== undefined) 
+    {
+        this.ViewportBound = Bound;
+    }
     
-    this.Viewport = ViewportArray;
+    this.ScissorBound = [];  
+    
+    this.SetViewport(ViewportArray, this.ViewportBound);
+    //this.Viewport = ViewportArray;
     this.NearPlane = 0;
     this.FarPlane = 1000;
 
@@ -40,7 +59,7 @@ CameraObject.prototype =
     GetWCWidth: function () { return this.CameraState.GetWidth(); },
     GetWCHeight: function () { return this.CameraState.GetWidth() * this.Viewport[CameraObject.EViewport.EHeight] / this.Viewport[CameraObject.EViewport.EWidth]; },
 
-    SetViewport: function (ViewportArray) { this.Viewport = ViewportArray; },
+    //SetViewport: function (ViewportArray) { this.Viewport = ViewportArray; },
     GetViewport: function () { return this.Viewport; },
 
     SetBackgroundColor: function (NewColor) { this.BackgroundColor = NewColor; },
@@ -60,10 +79,10 @@ CameraObject.prototype =
                            this.Viewport[2],  
                            this.Viewport[3]); 
 
-        glContext.scissor(this.Viewport[0], 
-                          this.Viewport[1], 
-                          this.Viewport[2], 
-                          this.Viewport[3]);
+        glContext.scissor(this.ScissorBound[0], 
+                          this.ScissorBound[1], 
+                          this.ScissorBound[2], 
+                          this.ScissorBound[3]);
 
         glContext.clearColor(this.BackgroundColor[0], this.BackgroundColor[1], this.BackgroundColor[2], this.BackgroundColor[3]);
         
@@ -94,16 +113,43 @@ CameraObject.prototype =
         this.RenderCache.CameraOrgY = Center[1] - (this.GetWCHeight() / 2);
     },
 
+    SetViewport: function (ViewportArray, Bound) 
+    {
+        if (Bound === undefined) 
+        {
+            Bound = this.ViewportBound;
+        }
+
+        this.Viewport[0] = ViewportArray[0] + Bound;
+        this.Viewport[1] = ViewportArray[1] + Bound;
+        this.Viewport[2] = ViewportArray[2] - (2 * Bound);
+        this.Viewport[3] = ViewportArray[3] - (2 * Bound);
+        this.ScissorBound[0] = ViewportArray[0];
+        this.ScissorBound[1] = ViewportArray[1];
+        this.ScissorBound[2] = ViewportArray[2];
+        this.ScissorBound[3] = ViewportArray[3];
+    },
+
+    GetViewport: function () 
+    {
+        var out = [];
+        out[0] = this.ScissorBound[0];
+        out[1] = this.ScissorBound[1];
+        out[2] = this.ScissorBound[2];
+        out[3] = this.ScissorBound[3];
+        return out; 
+    },
+
     FakeZInPixelSpace: function (InZ) 
     {
         return InZ * this.RenderCache.WCToPixelRatio;
     },
     
-    WCPosToPixel: function (InPixel) 
+    WCPosToPixel: function (InPosition) 
     {         
-        var x = this.Viewport[CameraObject.EViewport.EOrgX] + ((InPixel[0] - this.RenderCache.CameraOrgX) * this.RenderCache.WCToPixelRatio) + 0.5;
-        var y = this.Viewport[CameraObject.EViewport.EOrgY] + ((InPixel[1] - this.RenderCache.CameraOrgY) * this.RenderCache.WCToPixelRatio) + 0.5;
-        var z = this.FakeZInPixelSpace(InPixel[2]);
+        var x = this.Viewport[CameraObject.EViewport.EOrgX] + ((InPosition[0] - this.RenderCache.CameraOrgX) * this.RenderCache.WCToPixelRatio) + 0.5;
+        var y = this.Viewport[CameraObject.EViewport.EOrgY] + ((InPosition[1] - this.RenderCache.CameraOrgY) * this.RenderCache.WCToPixelRatio) + 0.5;
+        var z = this.FakeZInPixelSpace(InPosition[2]);
         return vec3.fromValues(x, y, z);
     },
     
@@ -130,6 +176,7 @@ CameraObject.prototype =
                 (dcY >= 0) && (dcY < this.Viewport[CameraObject.EViewport.EHeight]));
     },
     
+    // ver para inverter talvez???
     MouseWCX: function () 
     {
         var minWCX = this.GetWCCenter()[0] - this.GetWCWidth() / 2;
@@ -199,13 +246,6 @@ CameraObject.prototype =
         this.CameraShake = new CameraShake(this.CameraState, xDelta, yDelta, ShakeFrequency, Duration);
     }
 
-}
-
-function PerRenderCache() 
-{
-    this.WCToPixelRatio = 1;  
-    this.CameraOrgX = 1; 
-    this.CameraOrgY = 1;
 }
 
 

@@ -6,7 +6,7 @@ function LightObject()
     this.Position = vec3.fromValues(0, 0, 5);
     this.Near = 5;  
     this.Far = 10;  
-    this.mIntensity = 1 
+    this.Intensity = 1 
     //this.Radius = 10;  
     this.IsOn = true;
 }

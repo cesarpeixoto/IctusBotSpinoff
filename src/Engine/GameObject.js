@@ -4,7 +4,7 @@
 
 function GameObject(RenderComponentObject) 
 {
-    this.DefaultRenderComponent = RenderComponentObject;
+    this.DefaultRenderComponent = RenderComponentObject;    
 }
 
 GameObject.prototype.GetTransform = function () { return this.DefaultRenderComponent.GetTransform(); };
@@ -60,6 +60,8 @@ GameObjectArray.prototype.Render = function (RenderCamera)
 function GameObjectMap() 
 {
     this.ObjectArray = [];
+    this.ToRemove = false;
+    this.NewOne = null;
 }
 
 GameObjectMap.prototype.Size = function () { return this.ObjectArray.length; };
@@ -79,6 +81,37 @@ GameObjectMap.prototype.GetObjectById = function (IdIndex)
     alert("Id Inexistente");
 };
 
+GameObjectMap.prototype.RemoveObjectById = function (IdIndex) 
+{
+    if(this.ToRemove)
+    {
+        for (var i = 0; i < this.NewOne.length; i++) 
+        {
+            if(this.NewOne[i].ID == IdIndex)
+            {
+                var temp = null;
+                temp = this.NewOne.filter(e => e !== this.NewOne[i]);
+                this.NewOne = temp;
+                this.ToRemove = true;
+                break;
+            }
+        }
+    }
+    else
+    {
+        for (var i = 0; i < this.ObjectArray.length; i++) 
+        {
+            if(this.ObjectArray[i].ID == IdIndex)
+            {
+                this.NewOne = this.ObjectArray.filter(e => e !== this.ObjectArray[i]);
+                this.ToRemove = true;
+                break;
+            }                
+        }
+    }
+    
+};
+
 GameObjectMap.prototype.Add = function (InGameObject, InId) 
 {
     this.ObjectArray.push(new GameObjectEntry(InGameObject, InId));
@@ -94,6 +127,13 @@ GameObjectMap.prototype.Update = function (DeltaTime)
 
 GameObjectMap.prototype.Render = function (RenderCamera) 
 {
+    if(this.ToRemove)
+    {
+        this.ObjectArray = this.NewOne;
+        this.NewOne = null;
+        this.ToRemove = false;
+    }
+
     for (var i = 0; i < this.ObjectArray.length; i++) 
     {
         this.ObjectArray[i].Asset.Render(RenderCamera);

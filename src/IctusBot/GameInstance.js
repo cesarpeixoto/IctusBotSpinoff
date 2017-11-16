@@ -132,12 +132,12 @@ GameInstance.prototype.CreateUnityByID = function (StrId, x, y)
 
     if(UnityRender != null)
     {
-        //UnityRender.GetRenderComponent().AddLight(this.MainLight);
+        UnityRender.GetRenderComponent().AddLight(this.GlobalLightSet.GetLightAt(3));
         UnityRender.SetBoardPosition(x, y, Face);
-        for (var i = 0; i < 4; ++i) 
-        {
-            UnityRender.GetRenderComponent().AddLight(this.GlobalLightSet.GetLightAt(i));   
-        }
+        // for (var i = 0; i < 4; ++i) 
+        // {
+        //     UnityRender.GetRenderComponent().AddLight(this.GlobalLightSet.GetLightAt(i));   
+        // }
         
     }
     else
@@ -223,9 +223,10 @@ GameInstance.prototype.InitializeLights = function ()
     this.GlobalLightSet.AddToSet(Light);
     Light = this.CreateALight([24, 24, 8], [0.4, 0.7, 0.4, 1], 20, 45, 2.8);
     this.GlobalLightSet.AddToSet(Light);
-    Light = this.CreateALight([66, 23, 10], [0.7, 0.7, 0.7, 1], 10, 35);
+    //Light = this.CreateALight([66, 23, 10], [0.7, 0.7, 0.7, 1], 10, 3);
+    Light = this.CreateALight([66, 23, 6], [0.7, 0.7, 0.7, 1], 10, 3);
     this.GlobalLightSet.AddToSet(Light);
-    Light = this.CreateALight([0, 0, 2], [0.8, 0.8, 0.8, 1], 15, 40, 10);
+    Light = this.CreateALight([-5, -5, 7], [0.8, 0.6, 0.6, 1], 15, 40, 1);
     this.GlobalLightSet.AddToSet(Light);
 };
 

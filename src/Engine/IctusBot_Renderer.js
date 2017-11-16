@@ -79,6 +79,8 @@ IctusBot.VertexBuffer = (function ()
     // referência para as posições da textura para o quadrado no contexto do WebGL
     var _TextureCoordBuffer = null;
 
+    var _LineVertexBuffer = null;
+
     // Vertices do quadrado 
     var VerticesOfSquare = 
     [
@@ -110,6 +112,8 @@ IctusBot.VertexBuffer = (function ()
         // Carrega os vertices do quadrado no vertexBuffer
         glContext.bufferData(glContext.ARRAY_BUFFER, new Float32Array(VerticesOfSquare), glContext.STATIC_DRAW);
 
+        _LineVertexBuffer = glContext.createBuffer();
+
         // Cria um buder no contexto para as posições dos vertices
         _TextureCoordBuffer = glContext.createBuffer();
         // Ativa o VertexBuffer
@@ -126,13 +130,27 @@ IctusBot.VertexBuffer = (function ()
     // Retorna referência do buffer de vertices das da textura na geometria.
     var GetTextureCoordBufferRef = function () { return _TextureCoordBuffer; };
 
+    var GetGLLineVertexRef = function () { return _LineVertexBuffer; };
+
     //-----------------------------------------------------------------------------------------------------------------------------
+
+    var CleanUp = function () 
+    {
+        var glContext = IctusBot.Renderer.GetContext();
+        glContext.deleteBuffer(_SquareVertexBuffer);
+        glContext.deleteBuffer(_TextureCoordBuffer);
+        glContext.deleteBuffer(_LineVertexBuffer);
+    };
+
+
     // Define o escopo público.
     var PublicScope = 
     {
         Initialize: Initialize,
         GetVertexBufferRef: GetVertexBufferRef,
-        GetTextureCoordBufferRef: GetTextureCoordBufferRef
+        GetTextureCoordBufferRef: GetTextureCoordBufferRef,
+        GetGLLineVertexRef: GetGLLineVertexRef,
+        CleanUp: CleanUp
     };
 
     return PublicScope;
@@ -204,9 +222,10 @@ SimpleShader.prototype =
         var glContext = IctusBot.Renderer.GetContext();
         glContext.useProgram(this.CompiledShader);
         glContext.uniformMatrix4fv(this.ViewProjTransform, false, RenderCamera.GetViewProjectionMatrix());
+        glContext.bindBuffer(glContext.ARRAY_BUFFER, IctusBot.VertexBuffer.GetVertexBufferRef());
+        glContext.vertexAttribPointer(this.mShaderVertexPositionAttribute, 3, glContext.FLOAT, false, 0, 0);
         glContext.enableVertexAttribArray(this.ShaderVertexPositionAttribute);
         glContext.uniform4fv(this.PixelColor, InPixelColor);
-
         glContext.uniform4fv(this.GlobalAmbientColor, IctusBot.DefaultResources.GetGlobalAmbientColor());
         glContext.uniform1f(this.GlobalAmbientIntensity, IctusBot.DefaultResources.GetGlobalAmbientIntensity());
     },
@@ -217,6 +236,15 @@ SimpleShader.prototype =
     {
         var glContext = IctusBot.Renderer.GetContext();
         glContext.uniformMatrix4fv(this.ModelTransform, false, InModelTransform);
+    },
+
+    CleanUp: function () 
+    {
+        var glContext = IctusBot.Renderer.GetContext();
+        glContext.detachShader(this.CompiledShader, this.VertexShader);
+        glContext.detachShader(this.CompiledShader, this.FragmentShader);
+        glContext.deleteShader(this.VertexShader);
+        glContext.deleteShader(this.FragmentShader);
     },
 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -252,6 +280,8 @@ SimpleShader.prototype =
         return CompiledShader;
     }
 }
+
+
 
 //=================================================================================================================================
 // Classe para criação e pelas referências dos atributos do shader de textura.
@@ -333,6 +363,42 @@ SpriteShader.prototype.SetTextureCoordinate = function (TexCoord)
     glContext.bufferSubData(glContext.ARRAY_BUFFER, 0, new Float32Array(TexCoord));
 };
 
+SpriteShader.prototype.cleanUp = function () 
+{
+    var glContext = IctusBot.Renderer.GetContext();
+    glContext.deleteBuffer(this.mTexCoordBuffer);
+    SimpleShader.prototype.CleanUp.call(this);
+};
+
+
+function LineShader(VertexShaderPath, FragmentShaderPath) 
+{
+
+    SimpleShader.call(this, VertexShaderPath, FragmentShaderPath);  
+
+    this.PointSizeRef = null;            
+    var glContext = IctusBot.Renderer.GetContext();
+
+    this.PointSizeRef = glContext.getUniformLocation(this.CompiledShader, "uPointSize");
+    this.PointSize = 1;
+}
+
+IctusBot.Core.InheritPrototype(LightShader, SimpleShader);
+
+LineShader.prototype.ActivateShader = function (PixelColor, InCamera) 
+{
+    SimpleShader.prototype.ActivateShader.call(this, PixelColor, InCamera);
+
+    var glContext = IctusBot.Renderer.GetContext();
+    glContext.uniform1f(this.mPointSizeRef, this.mPointSize);
+    glContext.bindBuffer(glContext.ARRAY_BUFFER, IctusBot.VertexBuffer.GetTextureCoordBufferRef());
+    glContext.vertexAttribPointer(this.ShaderVertexPositionAttribute, 3, glContext.FLOAT, false, 0, 0);
+    glContext.enableVertexAttribArray(this.ShaderVertexPositionAttribute);
+};
+
+LineShader.prototype.SetPointSize = function (NewSize) { this.PointSize = NewSize; };
+
+
 
 
 
@@ -378,7 +444,7 @@ LightShader.prototype.ActivateShader = function (PixelColor, InCamera)
 
 LightShader.prototype.SetLight = function (InLight) 
 {
-    this.Light = InLight;
+    this.Lights = InLight;
 };
 
 // LightShader.prototype.LoadToShader = function (InCamera) 
@@ -406,7 +472,8 @@ function ShaderLightAtIndex(Shader, InIndex)
 ShaderLightAtIndex.prototype.LoadToShader = function (InCamera, InLight) 
 {
     var glContext = IctusBot.Renderer.GetContext();
-    glContext.uniform1i(this.IsOnRef, InLight.isLightOn());
+
+    glContext.uniform1i(this.IsOnRef, InLight.IsLightOn());
     if (InLight.IsLightOn()) 
     {
         var p = InCamera.WCPosToPixel(InLight.GetPosition());

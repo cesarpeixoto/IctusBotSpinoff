@@ -118,7 +118,12 @@ HeroObject.prototype.UpdateState = function ()
 {
     var PositionX = this.GetTransform().GetXPosition();
     var PositionY = this.GetTransform().GetYPosition();
-    this.GridPosition = FMath.Parse.ToGrid(PositionX, PositionY);
+    this.GridPosition = FMath.Parse.ToGrid(PositionX, PositionY);    
+}
+
+HeroObject.prototype.Die = function () 
+{
+    this.HeroRender.SetColor([1, 1, 1, 0]);    
 }
 
 

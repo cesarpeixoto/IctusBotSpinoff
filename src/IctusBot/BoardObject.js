@@ -30,11 +30,12 @@ BoardObject.prototype =
         RandomRender.GetTransform().SetPosition(0, 0);
         RandomRender.SetElementPixelPositions((RandomX * 616),  (RandomX + 1) * 616, (RandomY * 309) + 97, ((RandomY +1)* 309) +97);
 
-        for (var i = 0; i < this.WorldRef.GlobalLightSet.NumLights(); ++i) 
-        {
-            RandomRender.AddLight(this.WorldRef.GlobalLightSet.GetLightAt(i));   
-        }
-
+        
+        // for (var i = 0; i < this.WorldRef.GlobalLightSet.NumLights(); ++i) 
+        // {
+        //     RandomRender.AddLight(this.WorldRef.GlobalLightSet.GetLightAt(i));   
+        // }
+        RandomRender.AddLight(this.WorldRef.GlobalLightSet.GetLightAt(3));
         return RandomRender;
     },
 

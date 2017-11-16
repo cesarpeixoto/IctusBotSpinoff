@@ -1,13 +1,11 @@
 precision mediump float; 
     
-
 uniform sampler2D uSampler;
-
 uniform vec4 uPixelColor;  
 uniform vec4 uGlobalAmbientColor; // this is shared globally
 uniform float uGlobalAmbientIntensity;
 
-#define kGLSLuLightArraySize 4
+#define kGLSLuLightArraySize 4   // Precisar ser igual no lightshader do render!
 
 
 struct Light  
@@ -19,6 +17,7 @@ struct Light
     float Intensity;
     bool  IsOn;
 };
+
 uniform Light uLights[kGLSLuLightArraySize];  
 varying vec2 vTexCoord;
 
@@ -31,11 +30,10 @@ vec4 LightEffect(Light lgt)
 	{
         if (dist <= lgt.Near)
 		{
-            atten = 1.0;  //  no attenuation
+            atten = 1.0;  
 		}
         else 
-		{
-            // simple quadratic drop off
+		{            
             float n = dist - lgt.Near;
             float d = lgt.Far - lgt.Near;
             atten = smoothstep(0.0, 1.0, 1.0-(n*n)/(d*d)); 

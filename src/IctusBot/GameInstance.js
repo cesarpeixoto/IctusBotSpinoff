@@ -199,7 +199,7 @@ GameInstance.prototype.Update = function (DeltaTime)
 
 
 
-GameInstance.prototype.CreateALight = function (InPosition, Color, Near, Far, Intensity) 
+GameInstance.prototype.CreateALight = function (InPosition, Color, Near, Far, Intensity, Radius) 
 {
     var Light = new LightObject();
     Light.SetColor(Color);
@@ -208,6 +208,7 @@ GameInstance.prototype.CreateALight = function (InPosition, Color, Near, Far, In
     Light.SetZPosition(InPosition[2]);
     Light.SetNear(Near);
     Light.SetFar(Far);
+    Light.SetRadius(Radius);
     Light.SetIntensity(Intensity);
 
     return Light;
@@ -217,13 +218,13 @@ GameInstance.prototype.InitializeLights = function ()
 {
     this.GlobalLightSet = new LightSet();
 
-    var Light = this.CreateALight([21, 58, 5], [0.2, 0.2, 0.8, 1], 20, 50, 5.5);
+    var Light = this.CreateALight([21, 58, 5], [0.2, 0.2, 0.8, 1], 20, 50, 5.5, 5);
     this.GlobalLightSet.AddToSet(Light);
-    Light = this.CreateALight([24, 24, 8], [0.4, 0.7, 0.4, 1], 20, 45, 2.8);
+    Light = this.CreateALight([24, 24, 8], [0.4, 0.7, 0.4, 1], 20, 45, 2.8, 5);
     this.GlobalLightSet.AddToSet(Light);
-    Light = this.CreateALight([66, 23, 10], [0.7, 0.7, 0.7, 1], 10, 35, 3);
+    Light = this.CreateALight([66, 23, 10], [0.7, 0.7, 0.7, 1], 10, 35, 3,5);
     this.GlobalLightSet.AddToSet(Light);
-    Light = this.CreateALight([72, 57, 6], [0.8, 0.6, 0.6, 1], 15, 40, 3);
+    Light = this.CreateALight([0, 0, 2], [0.8, 0.8, 0.8, 1], 15, 40, 10, 10);
     this.GlobalLightSet.AddToSet(Light);
 };
 

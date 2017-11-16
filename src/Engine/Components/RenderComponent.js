@@ -169,7 +169,8 @@ AnimatedSpriteRenderComponent.EAnimationType = Object.freeze(
     EAnimateRight: 0,     
     EAnimateLeft: 1,      
     EAnimateSwing: 2,
-    EAnimateStoped: 3
+    EAnimateStoped: 3,
+    EOneTime: 4
 });
 
 
@@ -194,6 +195,10 @@ AnimatedSpriteRenderComponent.prototype.InitAnimation = function ()
     case AnimatedSpriteRenderComponent.EAnimationType.EAnimateStoped:
         this.CurrentFrame = 0;
         this.CurrentAnimAdvance = 0; 
+        break;
+    case AnimatedSpriteRenderComponent.EAnimationType.EOneTime:
+        this.CurrentFrame = 0;
+        this.CurrentAnimAdvance = 1; 
         break;
     }
     this.SetSpriteFrame();
@@ -253,6 +258,10 @@ AnimatedSpriteRenderComponent.prototype.UpdateAnimation = function ()
         } 
         else 
         {
+            if(this.AnimationType == AnimatedSpriteRenderComponent.EAnimationType.EOneTime)
+            {
+                this.AnimationType = AnimatedSpriteRenderComponent.EAnimationType.EAnimateStoped;
+            }
             this.InitAnimation();
         }
     }

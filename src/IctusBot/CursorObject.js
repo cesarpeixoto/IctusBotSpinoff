@@ -3,7 +3,7 @@
 
 
 
-function CursorObject(InSpriteTexture, InWorldRef, InUnitysMap) 
+function CursorObject(InSpriteTexture, InWorldRef, InUnitysMap, InExplosion, InHud) 
 {
     this.WorldRef = InWorldRef;
     this.UnitysMap = InUnitysMap;
@@ -13,7 +13,10 @@ function CursorObject(InSpriteTexture, InWorldRef, InUnitysMap)
     //this.CursorRender.GetTransform().SetScale(this.kRefWidth / 55, this.kRefHeight / 55);
     this.CursorRender.GetTransform().SetScale(10, 6);
     this.CursorRender.SetElementPixelPositions(0, 128, 0, 64);
-        
+    
+    this.Explosion = InExplosion;
+    this.Hud = InHud;
+
     this.SelectedUnityId = new SelectedUnity();
 
     GameObject.call(this, this.CursorRender);
@@ -51,8 +54,12 @@ CursorObject.prototype.Update = function (InCamera)
         }
         else
         {
-            this.CursorRender.SetColor([1, 1, 1, 0.1]);
+            this.CursorRender.SetColor([1, 0, 0, 0.5]);
         }
+    }
+    else
+    {
+         this.CursorRender.SetColor([1, 1, 1, 0.1]);
     }
     
 
@@ -90,34 +97,54 @@ CursorObject.prototype.Update = function (InCamera)
             {
                 if((X == Possibilities[i].x) && (Y ==  Possibilities[i].y))
                 {
-                    MoveUnitTo(this.SelectedUnityId.X, this.SelectedUnityId.Y, X, Y, this.SelectedUnityId.ID);
-                    this.SelectedUnityId.Asset.SetTargetLocation(X, Y);
-                    this.CursorRender.SetColor([1, 1, 1, 0.1]);
-                    this.SelectedUnityId.ID = "nil";
-                    this.SelectedUnityId.Asset = null;
-                    this.SelectedUnityId.X = -1;
-                    this.SelectedUnityId.Y = -1;
+                    if(Possibilities[i].action == "move")
+                    {
+                        MoveUnitTo(this.SelectedUnityId.X, this.SelectedUnityId.Y, X, Y, this.SelectedUnityId.ID);
+                        this.SelectedUnityId.Asset.SetTargetLocation(X, Y);
+                        this.CursorRender.SetColor([1, 1, 1, 0.1]);
+                        this.SelectedUnityId.ID = "nil";
+                        this.SelectedUnityId.Asset = null;
+                        this.SelectedUnityId.X = -1;
+                        this.SelectedUnityId.Y = -1;
+                    }
+                    else if(Possibilities[i].action == "kill")
+                    {
+                        this.UnitysMap.RemoveObjectById(board[X][Y]);
+                        board[X][Y] = "nil";
+                        this.Explosion.Run(X, Y);
+                        MoveUnitTo(this.SelectedUnityId.X, this.SelectedUnityId.Y, X, Y, this.SelectedUnityId.ID);
+                        this.SelectedUnityId.Asset.SetTargetLocation(X, Y);
+                        this.CursorRender.SetColor([1, 1, 1, 0.1]);                                                
+                        this.SelectedUnityId.ID = "nil";
+                        this.SelectedUnityId.Asset = null;
+                        this.SelectedUnityId.X = -1;
+                        this.SelectedUnityId.Y = -1; 
+                    }
+
+                    break;
                 }
-            }
-    
-            //alert("Vai fazer acao!!!");
-            // var Possibilities = GetMovementPossibilities(X, Y, this.SelectedUnityId);
+            }            
 
-
-            // //alert("X: = " + this.MainCamera.MouseWCX() + " Y: = " + this.MainCamera.MouseWCY());
-
-            // //var ClickX = Math.floor(((this.MainCamera.MouseWCX() / this.IsoOffsetX) + (this.MainCamera.MouseWCY() / this.IsoOffsetY)) / 2) + 1;
-            // //var ClickY = Math.floor(((this.MainCamera.MouseWCY() / this.IsoOffsetY) - (this.MainCamera.MouseWCX() / this.IsoOffsetX)) / 2) + 1;
-            // var x = this.WorldRef.GetCurrentXPosition(InCamera);
-            // var y = this.WorldRef.GetCurrentYPosition(InCamera);
-            // //alert("Posicao X no Array: = " + x + " Posicao Y no Array: = " + y);
-            // var movPossibilities = GetMovementPossibilities(x, y, board[x][y]);
-            // //alert(movPossibilities.length);
-            // for (var i = 0; i < movPossibilities.length; i++)
-            // {
-            //     alert("X: " + movPossibilities[i].x + "Y: " + movPossibilities[i].y + "acao: " + movPossibilities[i].action);
-            // }
         }
+
+        var Result = VerifyEndGame();
+
+        if(Result != 0)
+        {
+            this.Hud.SetState(HudObject.EState.EGameOver);
+        }
+        else
+        {
+            if(currentTurn == 1)
+            {
+                this.Hud.SetState(HudObject.EState.EAncient);
+            }
+            else
+            {
+                this.Hud.SetState(HudObject.EState.EModern);
+            }
+        }
+
     }
 
     if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Right))

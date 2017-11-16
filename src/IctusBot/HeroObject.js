@@ -48,46 +48,6 @@ HeroObject.prototype.SetFacing = function (Facing)
     }
 }
 
-// case UnityObject.EFaceing.ELeft:
-// this.HeroRender.SetSpriteSequence(768, 0, 341, 256, 6, 0);
-// break;
-// case UnityObject.EFaceing.ERight:
-// this.HeroRender.SetSpriteSequence(512, 0, 341, 256, 6, 0);
-// break;
-// case UnityObject.EFaceing.ETop:
-// this.HeroRender.SetSpriteSequence(256, 0, 341, 256, 6, 0);
-// break;
-// case UnityObject.EFaceing.EBottom:
-// this.HeroRender.SetSpriteSequence(1024, 0, 341, 256, 6, 0); 
-// break;
-
-// case UnityObject.EFaceing.ELeft:
-// this.HeroRender.SetSpriteSequence(1536, 0, 341, 512, 6, 0);
-// break;
-// case UnityObject.EFaceing.ERight:
-// this.HeroRender.SetSpriteSequence(1024, 0, 341, 512, 6, 0);
-// break;
-// case UnityObject.EFaceing.ETop:
-// this.HeroRender.SetSpriteSequence(512, 0, 341, 512, 6, 0);
-// break;
-// case UnityObject.EFaceing.EBottom:
-// this.HeroRender.SetSpriteSequence(2048, 0, 341, 512, 6, 0); 
-// break;
-
-// case UnityObject.EFaceing.ELeft:
-// this.HeroRender.SetSpriteSequence(1536, 0, 512, 512, 6, 0);
-// break;
-// case UnityObject.EFaceing.ERight:
-// this.HeroRender.SetSpriteSequence(1024, 0, 512, 512, 6, 0);
-// break;
-// case UnityObject.EFaceing.ETop:
-// this.HeroRender.SetSpriteSequence(512, 0, 512, 512, 6, 0);
-// break;
-// case UnityObject.EFaceing.EBottom:
-// this.HeroRender.SetSpriteSequence(2048, 0, 512, 512, 6, 0); 
-// break;
-
-
 HeroObject.prototype.SetBoardPosition = function (PositionX, PositionY, Face) 
 {
     var RenderPosition = FMath.Parse.ToIsometric(PositionX, PositionY);    
@@ -111,6 +71,7 @@ HeroObject.prototype.SetTargetLocation = function (x, y)
 HeroObject.prototype.Update = function (DeltaTime) 
 {
     this.UpdateState();
+    this.HeroRender.UpdateAnimation();
     this.HeroMovement.ProcessMovement(DeltaTime);
 }
 

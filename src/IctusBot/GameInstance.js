@@ -8,25 +8,33 @@ function GameInstance()
     this.kGroundSheet = "Assets/GrassSpriteSheet.png";
     this.kCursorSprite = "Assets/Cursor.png";
 
-    this.kAncientSniper = "Assets/AncientSniper.png"
-    this.kModernSniper = "Assets/ModernSniper.png"
-    this.kAncientTank = "Assets/AncientTank.png"
-    this.kModernTank = "Assets/ModernTank.png"
-    this.kAncientBomber = "Assets/AncientBomber.png"
-    this.kModernBomber = "Assets/ModernBomber.png"
-    this.kAncientHero = "Assets/AncientHeroV3.png"
-    this.kModernHero = "Assets/ModernHeroV3.png"       
+    this.kAncientSniper = "Assets/AncientSniper.png";
+    this.kModernSniper = "Assets/ModernSniper.png";
+    this.kAncientTank = "Assets/AncientTank.png";
+    this.kModernTank = "Assets/ModernTank.png";
+    this.kAncientBomber = "Assets/AncientBomber.png";
+    this.kModernBomber = "Assets/ModernBomber.png";
+    this.kAncientHero = "Assets/AncientHeroV3.png";
+    this.kModernHero = "Assets/ModernHeroV3.png";    
 
+    this.kExplosion = "Assets/ExplosionSheetV3.png";
+    this.kHud = "Assets/HudFrame.png";
     this.kDot = "Assets/Dot.png";
+
+    this.kExplosionAudio = "Assets/Sounds/Explosion.mp3";
+    this.kMusic = "Assets/Sounds/IctusBotBattleMusicv1.mp3";
+
+    //this.kCue = "assets/sounds/MyGame_cue.wav";
 
 
     this.UnitysMap = new GameObjectMap();
     this.Board = null;
     this.Cursor = null;
     this.GlobalLightSet = null;
-    
-    //this.MainLight = null;
 
+    this.Explosion = null;
+    this.Hud = null;
+    
     // Para testes... retirar depois...
     this.Dot = null;
     this.LightIndex = 0;
@@ -36,9 +44,12 @@ IctusBot.Core.InheritPrototype(GameInstance, MapInterface);
 
 GameInstance.prototype.LoadMap = function () 
 {
-    //IctusBot.AudioClips.LoadAudio(musica);
+    IctusBot.AudioClips.LoadAudio(this.kExplosionAudio);
+    IctusBot.AudioClips.LoadAudio(this.kMusic);
     IctusBot.Textures.LoadTexture(this.kGroundSheet);
     IctusBot.Textures.LoadTexture(this.kCursorSprite); 
+    IctusBot.Textures.LoadTexture(this.kExplosion);
+    IctusBot.Textures.LoadTexture(this.kHud);
 
     IctusBot.Textures.LoadTexture(this.kAncientSniper);
     IctusBot.Textures.LoadTexture(this.kModernSniper);
@@ -55,6 +66,7 @@ GameInstance.prototype.LoadMap = function ()
 
 GameInstance.prototype.UnloadMap = function () 
 {
+    IctusBot.AudioClips.StopBackgroundAudio();
     IctusBot.Textures.UnloadTexture(this.kGroundSheet);
     IctusBot.Textures.UnloadTexture(this.kCursorSprite);
     IctusBot.Textures.UnloadTexture(this.kAncientSniper);
@@ -65,17 +77,21 @@ GameInstance.prototype.UnloadMap = function ()
     IctusBot.Textures.UnloadTexture(this.kModernBomber);
     IctusBot.Textures.UnloadTexture(this.kAncientHero);
     IctusBot.Textures.UnloadTexture(this.kModernHero);
+    IctusBot.Textures.UnloadTexture(this.kExplosion);
+    IctusBot.Textures.UnloadTexture(this.kHud);
+    IctusBot.AudioClips.UnloadAudio(this.kExplosionAudio);
+    IctusBot.AudioClips.UnloadAudio(this.kMusic);
 };
 
 GameInstance.prototype.Initialize = function () 
 {
     // Cria a Camera.
     this.MainCamera = new CameraObject(vec2.fromValues(-10, -15), 100, [0, 0, 1920, 1080]);
-    this.MainCamera.SetBackgroundColor([0.8, 0.8, 0.8, 1]);
+    this.MainCamera.SetBackgroundColor([0.5, 0.5, 0.5, 1]);
 
     // var GlobalAmbientColor = IctusBot.DefaultResources.GetGlobalAmbientColor();
     // GlobalAmbientColor[0] -= 0.02;
-    //IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() + 1.7);
+    IctusBot.DefaultResources.SetGlobalAmbientIntensity(IctusBot.DefaultResources.GetGlobalAmbientIntensity() + 1.7);
 
     this.InitializeLights();
 
@@ -87,17 +103,16 @@ GameInstance.prototype.Initialize = function ()
     // this.MainLight.SetColor([0.9, 0.9, 0.2, 1]);
 
     this.Board = new BoardObject(this.kGroundSheet, this);
-    this.Cursor = new CursorObject(this.kCursorSprite, this.Board, this.UnitysMap);
+    this.Explosion = new ExplosionObject(this.kExplosion);
+    this.Hud = new HudObject(this.kHud);
+    this.Cursor = new CursorObject(this.kCursorSprite, this.Board, this.UnitysMap, this.Explosion, this.Hud);
     
-    
+       
     this.InitializeUnitys();
 
+    IctusBot.AudioClips.PlayBackgroundAudio(this.kMusic);
     var test = 0;
-    //var DotRender = new SpriteSheetRenderComponent(this.kDot);
-    //DotRender.SetElementPixelPositions(0, 4, 0, 4);      
-    //DotRender.GetTransform().SetScale(1, 1);         
-    //DotRender.GetTransform().SetPosition(0, 0); 
-    //this.Dot = new GameObject(DotRender);   
+
 };
 
 GameInstance.prototype.InitializeUnitys = function () 
@@ -159,8 +174,8 @@ GameInstance.prototype.Render = function ()
     this.Cursor.Render(this.MainCamera);
 
     this.UnitysMap.Render(this.MainCamera);
-
-
+    this.Explosion.Render(this.MainCamera);
+    this.Hud.Render(this.MainCamera);
     //this.Dot.Render(this.MainCamera);
 
 };
@@ -175,6 +190,12 @@ GameInstance.prototype.Update = function (DeltaTime)
     this.UnitysMap.Update(DeltaTime);
 
     this.LightControl();
+
+    this.Explosion.Update(DeltaTime);
+    this.Hud.Update(DeltaTime);
+
+
+
     // var v = IctusBot.DefaultResources.GetGlobalAmbientColor();
     // if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Left)) 
     // {
@@ -223,10 +244,9 @@ GameInstance.prototype.InitializeLights = function ()
     this.GlobalLightSet.AddToSet(Light);
     Light = this.CreateALight([24, 24, 8], [0.4, 0.7, 0.4, 1], 20, 45, 2.8);
     this.GlobalLightSet.AddToSet(Light);
-    //Light = this.CreateALight([66, 23, 10], [0.7, 0.7, 0.7, 1], 10, 3);
-    Light = this.CreateALight([66, 23, 6], [0.7, 0.7, 0.7, 1], 10, 3);
+    Light = this.CreateALight([66, 23, 10], [0.7, 0.7, 0.7, 1], 10, 3);    
     this.GlobalLightSet.AddToSet(Light);
-    Light = this.CreateALight([-5, -5, 7], [0.8, 0.6, 0.6, 1], 15, 40, 1);
+    Light = this.CreateALight([-5, -5, 7], [0.8, 0.6, 0.6, 1], 15, 40, 0.7);
     this.GlobalLightSet.AddToSet(Light);
 };
 

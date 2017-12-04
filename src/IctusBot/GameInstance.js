@@ -171,7 +171,7 @@ GameInstance.prototype.StartMatch = function(AncientPlayer, ModernPlayer)
 
     if(this.GameStarted && !IctusBot.AudioClips.IsBackgroundAudioPlaying())
     {
-        //IctusBot.AudioClips.PlayBackgroundAudio(this.kMusic);
+        IctusBot.AudioClips.PlayBackgroundAudio(this.kMusic);
         this.Hud.StartMatch();
     }
 }

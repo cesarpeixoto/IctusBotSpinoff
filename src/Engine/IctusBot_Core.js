@@ -81,13 +81,13 @@ IctusBot.Core = (function ()
         IctusBot.DefaultResources.Initialize(function() { LoadMap(InGameInstance); });
     };
 
-    var StartMatch = function()
+    var StartMatch = function(AncientPlayer, ModernPlayer)
     {
         if(GameInstance !== null)
         {
-            GameInstance.StartMatch();
+            GameInstance.StartMatch(AncientPlayer, ModernPlayer);
         }
-    }
+    };
 
     var InheritPrototype = function (SubClass, SuperClass) 
     {
@@ -100,6 +100,7 @@ IctusBot.Core = (function ()
     {
         StartGame: StartGame, // Será que precisa deixar público mesmo?
         StopGame: StopGame,
+        StartMatch: StartMatch,
         LoadMap, LoadMap,
         InheritPrototype: InheritPrototype,
         InitializeSystems: InitializeSystems

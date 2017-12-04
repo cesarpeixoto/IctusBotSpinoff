@@ -2,21 +2,40 @@
 <html>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <head>
-        <title>ICTUS BOT</title>              
-    </head>
+        <title>ICTUS BOT</title>
 
- 	<style>
-	#GLCanvas {
-	position: absolute;
-	display: block;
-	width:     99%;
-	height:    99%;
-    }
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"crossorigin="anonymous">		
+    <!-- Latest compiled and minified JavaScript -->
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<style>
+		#GLCanvas {
+		position: absolute;
+		display: block;
+		width:     99%;
+		height:    99%;
+		}
+		
+		a{
+			text-decoration: none;
+			font-size: 1em;
+			color: #1595bb;
+			font-family: arial;
+			text-align: center;
+		}
+		.form-inline .form-group{
+			padding-left: 10%;
+		}
     </style>
+	
+	</head>
 
     <body onload="
         var IctusBotInstance = new GameInstance();
         IctusBot.Core.InitializeSystems('GLCanvas', IctusBotInstance);">
+		
+		<a href="http://104.131.91.165:3000/">> Back to home Site</a> 
 
             <script type="text/javascript" src="src/Libs/gl-matrix.js"></script>
             <script type="text/javascript" src="src/Engine/IctusBot_Core.js"></script>
@@ -29,9 +48,9 @@
             <script type="text/javascript" src="src/Engine/CameraObject.js"></script>
             <script type="text/javascript" src="src/Engine/MapInterface.js"></script>
             <script type="text/javascript" src="src/Engine/GameObject.js"></script> 
-            <script type="text/javascript" src="src/Engine/LightObject.js"></script> 
-            <script type="text/javascript" src="src/Engine/Material.js"></script> 
-            <script type="text/javascript" src="src/Engine/ShadowObject.js"></script>         
+            <script type="text/javascript" src="src/Engine/LightObject.js"></script>
+			<script type="text/javascript" src="src/Engine/Material.js"></script> 
+            <script type="text/javascript" src="src/Engine/ShadowObject.js"></script> 			
 
             <script type="text/javascript" src="src/IctusBot/GameInstance.js"></script>
             <script type="text/javascript" src="src/IctusBot/MapFileParser.js"></script>
@@ -43,9 +62,136 @@
             <script type="text/javascript" src="src/IctusBot/gameLogic.js"></script>   
             <script type="text/javascript" src="src/IctusBot/ExplosionObject.js"></script> 
             <script type="text/javascript" src="src/IctusBot/HudObject.js"></script>    
-        <canvas id="GLCanvas" width="1920" height="1080"></canvas>                  
-    </body>
+        <canvas id="GLCanvas" width="1920" height="1080"></canvas>
 
-    
+		<!-- Modal para os players -->
+		<div id="players" class="modal fade" role="dialog">
+		  <div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h4 class="modal-title">Enter the names to start combat</h4>
+			  </div>
+			  <div class="modal-body">
+				<form class="form-inline">
+				  <div class="form-group">
+					<h3>Modern Clan Player</h3>
+					<label class="sr-only" for="">Your Name</label>
+					<input type="text" class="form-control" id="nameModern" name="nameModern" placeholder="Seu Nome">
+				  </div>
+				  <div class="form-group">
+					<h3>Ancient Clan Player</h3>				  
+					<label class="sr-only" for="">Your Name</label>
+					<input type="text" class="form-control" id="nameAncient" name="nameAncient" placeholder="Seu Nome">
+				  </div>
+				</form>				
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-success" data-dismiss="modal" onClick="pr()">Iniciar</button>
+			  </div>
+			</div>
+		  </div>
+		</div>
+		<!-- Modal para Victory Modern -->
+		<div id="victoryModern" class="modal fade victory" role="dialog">
+		  <div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Victory</h4>
+			  </div>
+			  <div class="modal-body">
+				<!-- Imagem Victory Ancient ou Modern-->							
+				<img src="https://placeimg.com/500/480/any">
+					<h4>Nome: <span>$variavel</span></h4>     
+					<h4>Duração:<span>$variavel</span></h4>     
+					
+					<h4>Nome do perdedor se quiser</h4>
+					<h4>Nome: <span>$variavel</span></h4>     
+					<h4>Duração:<span>$variavel</span></h4>    					
+					<span id="nameModern"></span>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-prymary" data-dismiss="modal">fechar</button>
+			  </div>
+			</div>
+
+		  </div>
+		</div>
+		<!-- Modal para Victory Ancient -->		
+		<div id="victoryAncient" class="modal fade victory" role="dialog">
+		  <div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Victory</h4>
+			  </div>
+			  <div class="modal-body">
+				<!-- Imagem Victory Ancient ou Modern-->							
+				<img src="https://placeimg.com/500/480/any">
+					<h4>Nome: <span>$variavel</span></h4>     
+					<h4>Duração:<span>$variavel</span></h4>     
+					
+					<h4>Nome do perdedor se quiser</h4>
+					<h4>Nome: <span>$variavel</span></h4>     
+					<h4>Duração:<span>$variavel</span></h4>    					
+					<span id="nameModern"></span>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-prymary" data-dismiss="modal">fechar</button>
+			  </div>
+			</div>
+
+		  </div>
+		</div>		
+		
+<!--
+		<div id="ancient" class="modal fade" role="dialog">
+		  <div class="modal-dialog">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">Ancient Info</h4>
+			  </div>
+			  <div class="modal-body">
+				<p>Some text in the modal.</p>
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			  </div>
+			</div>
+
+		  </div>
+		</div>
+-->		
+<script>
+//chama modal ao inicar a pagina
+//Também é possivel chamar modal atravez de algum elemento como um botão ou evento https://codepen.io/SitePoint/pen/KkHyw
+	 $(window).load(function(){ 
+	 	//$('#victoryModern').modal('show');   
+	 	//$('#victoryAncient').modal('show');   
+		$('#players').modal('show');   
+	  // $('#modern').modal('show');   
+	 //  $('#ancient').modal('show');
+
+		}); 	
+</script>	
+
+<script>
+	//função que print somente vai que cola 
+	//https://stackoverflow.com/questions/35154428/how-do-you-print-user-input-in-html-using-javascript
+	//https://www.w3schools.com/bootstrap/bootstrap_ref_js_modal.asp
+  function pr() 
+  {
+	//document.getElementById("nameModern").innerHTML = document.getElementById('nameModern').value;
+	var AcientName = document.getElementById('nameAncient').value;
+	var ModernName = document.getElementById('nameModern').value;
+		
+	IctusBot.Core.StartMatch(AcientName, ModernName);
+  }
+</script>
+    </body>
 
 </html>

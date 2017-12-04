@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <head>
+        <title>ICTUS BOT</title>              
+    </head>
+
+ 	<style>
+	#GLCanvas {
+	position: absolute;
+	display: block;
+	width:     99%;
+	height:    99%;
+    }
+    </style>
+
+    <body onload="
+        var IctusBotInstance = new GameInstance();
+        IctusBot.Core.InitializeSystems('GLCanvas', IctusBotInstance);">
+            <script type="text/javascript" src="src/Libs/gl-matrix.js"></script>
+            <script type="text/javascript" src="src/Engine/IctusBot_Core.js"></script>
+            <script type="text/javascript" src="src/Engine/IctusBot_Renderer.js"></script>
+            <script type="text/javascript" src="src/Engine/IctusBot_Input.js"></script>
+            <script type="text/javascript" src="src/Engine/IctusBot_ResourceManager.js"></script>            
+            <script type="text/javascript" src="src/Engine/Components/RenderComponent.js"></script>            
+            <script type="text/javascript" src="src/Engine/Components/TransformComponent.js"></script>
+            <script type="text/javascript" src="src/Engine/FMath.js"></script>
+            <script type="text/javascript" src="src/Engine/CameraObject.js"></script>
+            <script type="text/javascript" src="src/Engine/MapInterface.js"></script>
+            <script type="text/javascript" src="src/Engine/GameObject.js"></script> 
+            <script type="text/javascript" src="src/Engine/LightObject.js"></script> 
+            <script type="text/javascript" src="src/Engine/Material.js"></script> 
+            <script type="text/javascript" src="src/Engine/ShadowObject.js"></script>         
+
+            <script type="text/javascript" src="src/IctusBot/GameInstance.js"></script>
+            <script type="text/javascript" src="src/IctusBot/MapFileParser.js"></script>
+            <script type="text/javascript" src="src/IctusBot/BoardObject.js"></script>
+            <script type="text/javascript" src="src/IctusBot/CursorObject.js"></script>
+            <script type="text/javascript" src="src/IctusBot/Unity.js"></script>
+            <script type="text/javascript" src="src/IctusBot/HeroObject.js"></script>            
+            <script type="text/javascript" src="src/IctusBot/movementData.js"></script>
+            <script type="text/javascript" src="src/IctusBot/gameLogic.js"></script>   
+            <script type="text/javascript" src="src/IctusBot/ExplosionObject.js"></script> 
+            <script type="text/javascript" src="src/IctusBot/HudObject.js"></script>    
+        <canvas id="GLCanvas" width="1920" height="1080"></canvas>    	
+    </body>
+
+    
+
+</html>

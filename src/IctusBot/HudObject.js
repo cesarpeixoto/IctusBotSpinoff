@@ -103,7 +103,8 @@ HudObject.prototype.SetState = function (NewState)
     case HudObject.EState.EGameOver:    
         this.HudRender.SetElementPixelPositions(682, 1024, 0, 350);
         this.GameInstanceRef.IsPaused = true;
-        window.setTimeout(this.GameOver, 100);
+        var Instance = this;
+        window.setTimeout(function() {Instance.GameOver();}, 1000);
         break;
     }
 }
@@ -113,16 +114,18 @@ HudObject.prototype.GameOver = function ()
 {
     var Result = VerifyEndGame();
     var bIsAncientWins = Result == 1;
+    var Name1 = this.GameInstanceRef.ModernPlayerNameStr;
+    var Name2 = this.GameInstanceRef.AncientPlayerNameStr; 
 
-    this.SendData(this.GameInstanceRef.AncientPlayerNameStr, this.GameInstanceRef.ModernPlayerNameStr, this.GameTime, bIsAncientWins);
+    IctusBot.AudioClips.StopBackgroundAudio();
+    this.SendData(Name2, Name1, this.GameTime, bIsAncientWins);
 }
 
 
 
 HudObject.prototype.SendData = function (AncientName, ModernName, TimeOfMatch, IsAncientWins)
 {
-
-
+    alert("Vai enviar os dados");
 }
 
 

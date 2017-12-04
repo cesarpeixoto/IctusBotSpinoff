@@ -9,6 +9,7 @@ function PerRenderCache()
     this.WCToPixelRatio = 1;  
     this.CameraOrgX = 1; 
     this.CameraOrgY = 1;
+    this.CameraPosInPixelSpace = vec3.fromValues(0, 0, 0);
 }
 
 function CameraObject(InWCCenter, InWCWidth, ViewportArray, Bound) 
@@ -23,12 +24,12 @@ function CameraObject(InWCCenter, InWCWidth, ViewportArray, Bound)
         this.ViewportBound = Bound;
     }
     
-    this.ScissorBound = [];  
-    
+    this.ScissorBound = [];      
     this.SetViewport(ViewportArray, this.ViewportBound);
     //this.Viewport = ViewportArray;
     this.NearPlane = 0;
     this.FarPlane = 1000;
+    this.kCameraZ = 150;     // Constante no eixo z para computar a iluminação... não vamos fazer mais complexo que isso pelo tempo...
 
     // matrizes de transformação
     this.ViewMatrix = mat4.create();
@@ -58,6 +59,9 @@ CameraObject.prototype =
     SetWCWidth: function (InWidth) { this.CameraState.SetWidth(InWidth); },
     GetWCWidth: function () { return this.CameraState.GetWidth(); },
     GetWCHeight: function () { return this.CameraState.GetWidth() * this.Viewport[CameraObject.EViewport.EHeight] / this.Viewport[CameraObject.EViewport.EWidth]; },
+
+    GetPosInPixelSpace: function () { return this.RenderCache.CameraPosInPixelSpace; },
+
 
     //SetViewport: function (ViewportArray) { this.Viewport = ViewportArray; },
     GetViewport: function () { return this.Viewport; },
@@ -98,7 +102,7 @@ CameraObject.prototype =
 
 
         mat4.lookAt(this.ViewMatrix,
-                   [Center[0], Center[1], 10],   
+                   [Center[0], Center[1], this.kCameraZ],   
                    [Center[0], Center[1], 0],     
                    [0, 1, 0]);    
 
@@ -111,6 +115,11 @@ CameraObject.prototype =
         this.RenderCache.WCToPixelRatio = this.Viewport[CameraObject.EViewport.EWidth] / this.GetWCWidth();
         this.RenderCache.CameraOrgX = Center[0] - (this.GetWCWidth() / 2);
         this.RenderCache.CameraOrgY = Center[1] - (this.GetWCHeight() / 2);
+
+        var PosToPixel = this.WCPosToPixel(this.GetWCCenter());
+        this.RenderCache.CameraPosInPixelSpace[0] = PosToPixel[0];
+        this.RenderCache.CameraPosInPixelSpace[1] = PosToPixel[1];
+        this.RenderCache.CameraPosInPixelSpace[2] = this.FakeZInPixelSpace(this.kCameraZ);
     },
 
     SetViewport: function (ViewportArray, Bound) 
@@ -150,6 +159,14 @@ CameraObject.prototype =
         var x = this.Viewport[CameraObject.EViewport.EOrgX] + ((InPosition[0] - this.RenderCache.CameraOrgX) * this.RenderCache.WCToPixelRatio) + 0.5;
         var y = this.Viewport[CameraObject.EViewport.EOrgY] + ((InPosition[1] - this.RenderCache.CameraOrgY) * this.RenderCache.WCToPixelRatio) + 0.5;
         var z = this.FakeZInPixelSpace(InPosition[2]);
+        return vec3.fromValues(x, y, z);
+    },
+
+    WCDirToPixel: function (InDirection) 
+    {  
+        var x = InDirection[0] * this.RenderCache.WCToPixelRatio;
+        var y = InDirection[1] * this.RenderCache.WCToPixelRatio;
+        var z = InDirection[2];
         return vec3.fromValues(x, y, z);
     },
     

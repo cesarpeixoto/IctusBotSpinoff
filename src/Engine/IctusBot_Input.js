@@ -33,7 +33,7 @@ IctusBot.Input = (function ()
         Seven: 55,
         Eight: 56,
         Nine: 57,
-
+        
         A: 65,
         B: 66,
         C: 67,
@@ -60,6 +60,7 @@ IctusBot.Input = (function ()
         X: 88,
         Y: 89,
         Z: 90,
+        Apostrophe: 192,
 
         LastKeyCode: 222
     };
@@ -82,7 +83,19 @@ IctusBot.Input = (function ()
     var IsKeyPressed = [];    
     var IsKeyClicked = [];
 
-    var OnKeyDown = function (event) { IsKeyPressed[event.keyCode] = true; };
+    var LastKey = null;
+
+    var _Callback = null; // Este callback é para quem precisa de um comportamento de teclado comum!!
+
+    var RegisterCallback = function (InCallBack) { _Callback = InCallBack; };
+
+    var OnKeyDown = function (event) 
+    { 
+        IsKeyPressed[event.keyCode] = true; 
+
+        if(_Callback !== null) 
+            _Callback(event); 
+    };
     var OnKeyUp = function (event) { IsKeyPressed[event.keyCode] = false; };
 
     var Initialize = function (WebGLCanvasID) 
@@ -172,6 +185,7 @@ IctusBot.Input = (function ()
         IsKeyPressed: IsKeyPressed,
         IsKeyClicked: IsKeyClicked,
         keys: kKeysCode,
+        RegisterCallback: RegisterCallback,
 
         IsButtonPressed: IsButtonPressed,
         IsButtonClicked: IsButtonClicked,

@@ -9,7 +9,7 @@ function BoardObject(InSpriteTexture, InWorld)
     this.WorldRef = InWorld;
     this.IsoOffsetX = 6.4;
     this.IsoOffsetY = -3.2;
-
+    this.Shadows = [];
     this.PositionGridClicked = vec2.fromValues(-1, -1);
 
     this.InitializeGroundTiles();
@@ -25,28 +25,33 @@ BoardObject.prototype =
         var RandomY = Math.floor(Math.random() * 3);
 
         var RandomRender = new LightRenderComponent(this.kSpriteTextures);
+        
         RandomRender.SetColor([1, 1, 1, 0]);
         RandomRender.GetTransform().SetScale(12.8, 6.4);
         RandomRender.GetTransform().SetPosition(0, 0);
         RandomRender.SetElementPixelPositions((RandomX * 616),  (RandomX + 1) * 616, (RandomY * 309) + 97, ((RandomY +1)* 309) +97);
 
-        
-        // for (var i = 0; i < this.WorldRef.GlobalLightSet.NumLights(); ++i) 
-        // {
-        //     RandomRender.AddLight(this.WorldRef.GlobalLightSet.GetLightAt(i));   
-        // }
-        RandomRender.AddLight(this.WorldRef.GlobalLightSet.GetLightAt(3));
+        RandomRender.AddLight(this.WorldRef.GlobalLightSet.GetLightAt(1));
+        RandomRender.AddLight(this.WorldRef.GlobalLightSet.GetLightAt(0));
         return RandomRender;
     },
 
     InitializeGroundTiles: function()
-    {
+    {        
         var index = 0;
         for(var y = 0; y < 7; ++y)
         {
             for(var x = 0; x < 5; ++x)
             {
                 this.BoardSprites[index] = new GameObject(this.CreateRandomRender());
+
+                this.Shadows[index] = new ShadowReceiver(this.BoardSprites[index]);
+
+                for (var j = 0; j < this.WorldRef.UnitysMap.Size(); ++j) // ativa sombra no sprite emitida por cada unidade.
+                {
+                    this.Shadows[index].AddShadowCaster(this.WorldRef.UnitysMap.GetObjectAt(j));
+                }
+
                 var Xposition = (x - y) * this.IsoOffsetX;
                 var Yposition = (x + y) * this.IsoOffsetY;
                 Yposition += this.IsoOffsetY;
@@ -54,6 +59,15 @@ BoardObject.prototype =
                 this.BoardSprites[index].GetTransform().SetPosition(Xposition, Yposition);
                 ++index;
             }
+        }
+
+    },
+
+    RemoveShadow: function(UnityToRemove)
+    {
+        for (var i = 0; i < this.Shadows.length; ++i)
+        {
+            this.Shadows[i].RemoveShadowCaster(UnityToRemove);
         }
     },
 
@@ -64,6 +78,11 @@ BoardObject.prototype =
          {                 
              this.BoardSprites[i].Render(InCamera);
          }
+         for (var j = 0; j < this.Shadows.length; ++j)
+         {
+            this.Shadows[j].Render(InCamera);
+         }
+         // {
          //this.BoardSprites[1].Render(InCamera);
          this.SetGridPosition(InCamera);
     },    

@@ -132,33 +132,6 @@ FMath.Parse = (function ()
     };
 
 
-    // var PositionToIsometric = function (x, y) 
-    // {
-    //     var IsoXPosition = ((x / kIsoOffset.X) + (y / kIsoOffset.Y) / 2);
-    //     var IsoYPosition = ((y / kIsoOffset.Y) - (x / kIsoOffset.X) / 2);
-    //     return vec2.fromValues(IsoXPosition, IsoYPosition);
-    // };
-
-    // var IsometricToGrid = function (x, y) 
-    // {
-    //     var GridXPosition = Math.trunc((x - y) * kIsoOffset.X);
-    //     var GridYPosition = Math.trunc((x + y) * kIsoOffset.Y);
-    //     return vec2.fromValues(GridXPosition, GridYPosition);
-    // };
-
-    // var PositionToGrid2 = function (x, y)
-    // {
-    //     var IsoPosition = PositionToIsometric(x, y);
-    //     return IsometricToGrid(IsoPosition[0], IsoPosition[1]);
-    // };
-
-    // var GridToIsometric = function (x, y)
-    // {
-    //     var IsoPosition = PositionToIsometric(x, y);
-    //     return IsometricToGrid(IsoPosition[0], IsoPosition[1]);
-    // };
-
-
     
     var PublicScope = 
     {

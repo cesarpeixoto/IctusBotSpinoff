@@ -8,7 +8,8 @@ function TransformComponent()
 {
     this.Position = vec2.fromValues(0, 0);  
     this.RotationInRad = 0.0;               
-    this.Scale = vec2.fromValues(1, 1);     
+    this.Scale = vec2.fromValues(1, 1); 
+    this.Z = 0.0;     
 }
 
 TransformComponent.prototype =
@@ -27,6 +28,12 @@ TransformComponent.prototype =
 
     AddToXPosition: function (Value) { this.Position[0] += Value; },
     AddToYPosition: function (Value) { this.Position[1] += Value; },
+
+    SetZPosition: function (d) { this.Z = d; },
+    GetZPosition: function () { return this.Z; },
+    IncZPosBy: function (delta) { this.Z += delta; },
+    Get3DPosition: function () { return vec3.fromValues(this.GetXPosition(), this.GetYPosition(), this.GetZPosition()); },
+
     
     //-----------------------------------------------------------------------------------------------------------------------------
     // Funções relativas a escala.
@@ -59,12 +66,21 @@ TransformComponent.prototype =
     GetRotationInRad: function () {  return this.RotationInRad; },
     GetRotationInDegree: function () { return this.RotationInRad * 180.0 / Math.PI; },
 
+    CloneTo: function (InTransform) 
+    {
+        InTransform.Position = vec2.clone(this.Position);
+        InTransform.Scale = vec2.clone(this.Scale);
+        InTransform.Z = this.Z;
+        InTransform.RotationInRad = this.RotationInRad;
+    },
+
     //-----------------------------------------------------------------------------------------------------------------------------
     // Retorna a matriz de transformação.
     GetTransform: function () 
     {
         var matrix = mat4.create();
-        mat4.translate(matrix, matrix, vec3.fromValues(this.GetXPosition(), this.GetYPosition(), 0.0));
+        //mat4.translate(matrix, matrix, vec3.fromValues(this.GetXPosition(), this.GetYPosition(), 0.0));
+        mat4.translate(matrix, matrix, this.Get3DPosition());
         mat4.rotateZ(matrix, matrix, this.GetRotationInRad());
         mat4.scale(matrix, matrix, vec3.fromValues(this.GetWidth(), this.GetHeight(), 1.0));
 

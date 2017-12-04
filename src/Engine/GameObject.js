@@ -117,6 +117,11 @@ GameObjectMap.prototype.Add = function (InGameObject, InId)
     this.ObjectArray.push(new GameObjectEntry(InGameObject, InId));
 };
 
+GameObjectMap.prototype.Length = function () 
+{
+    return this.ObjectArray.length;
+};
+
 GameObjectMap.prototype.Update = function (DeltaTime) 
 {
     for (var i = 0; i < this.ObjectArray.length; i++) 

@@ -1,0 +1,4 @@
+caixa_texto = 0 0 550 59
+icon_clas = 0 190 182 182
+icon_mod = 260 60 182 182
+timer = 0 60 259 129

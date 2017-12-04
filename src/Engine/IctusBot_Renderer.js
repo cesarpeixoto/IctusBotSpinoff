@@ -30,7 +30,7 @@ IctusBot.Renderer = (function ()
         var Canvas = document.getElementById(htmlCanvasID);    
         
         // Recebe referência do contexto WebGl
-        gContext = Canvas.getContext("webgl", { alpha: false }) || Canvas.getContext("experimental-webgl", { alpha: false });
+        gContext = Canvas.getContext("webgl", {alpha: false, depth: true, stencil: true}) || Canvas.getContext("experimental-webgl", {alpha: false, depth: true, stencil: true});
 
         // Permite transparência nas texturas
         gContext.blendFunc(gContext.SRC_ALPHA, gContext.ONE_MINUS_SRC_ALPHA);
@@ -38,6 +38,9 @@ IctusBot.Renderer = (function ()
 
         // Define que imagens podem flipar no eixo Y para casar com as coordenadas de textura no espaço.
         gContext.pixelStorei(gContext.UNPACK_FLIP_Y_WEBGL, true);
+
+        gContext.enable(gContext.DEPTH_TEST);
+        gContext.depthFunc(gContext.LEQUAL);
 
         // Checa erros
         if (gContext === null)
@@ -52,14 +55,21 @@ IctusBot.Renderer = (function ()
     {
         // Matrix RGBA        
         gContext.clearColor(Color[0], Color[1], Color[2], Color[3]);  
-        gContext.clear(gContext.COLOR_BUFFER_BIT);      
+        gContext.clear(gContext.COLOR_BUFFER_BIT | gContext.STENCIL_BUFFER_BIT | gContext.DEPTH_BUFFER_BIT);      
+    };
+
+    var CleanUp = function () 
+    {
+        IctusBot.DefaultResources.CleanUp();
+        IctusBot.VertexBuffer.CleanUp();
     };
 
     var PublicScope = 
     {
         GetContext: GetContext,
         InitializeWebGL: InitializeWebGL,
-        Clear: Clear
+        Clear: Clear,
+        CleanUp: CleanUp
     };
 
     return PublicScope;
@@ -293,8 +303,12 @@ function TextureShader(VertexShaderPath, FragmentShaderPath)
 
     // Referência do atributo aTextureCoordinate do shader
     this.ShaderTextureCoordAttribute = null;
+    this.SamplerRef = null;
+
     var glContext = IctusBot.Renderer.GetContext();
 
+    // Recebe referência do atributo uSampler do shader 
+    this.SamplerRef = glContext.getUniformLocation(this.CompiledShader, "uSampler");
     // Recebe referência do atributo aTextureCoordinate do shader    
     this.ShaderTextureCoordAttribute = glContext.getAttribLocation(this.CompiledShader, "aTextureCoordinate");
 }
@@ -366,9 +380,13 @@ SpriteShader.prototype.SetTextureCoordinate = function (TexCoord)
 SpriteShader.prototype.cleanUp = function () 
 {
     var glContext = IctusBot.Renderer.GetContext();
-    glContext.deleteBuffer(this.mTexCoordBuffer);
+    glContext.deleteBuffer(this.TexCoordBuffer);
     SimpleShader.prototype.CleanUp.call(this);
 };
+
+SpriteShader.prototype.SetLight = function (NewLight) { };
+
+SpriteShader.prototype.SetMaterialAndCameraPos = function(NewMaterial, NewPosition) { };
 
 
 function LineShader(VertexShaderPath, FragmentShaderPath) 
@@ -477,15 +495,37 @@ ShaderLightAtIndex.prototype.LoadToShader = function (InCamera, InLight)
     if (InLight.IsLightOn()) 
     {
         var p = InCamera.WCPosToPixel(InLight.GetPosition());
-        var ic = InCamera.WCSizeToPixel(InLight.GetNear());
-        var oc = InCamera.WCSizeToPixel(InLight.GetFar());
+        var n = InCamera.WCSizeToPixel(InLight.GetNear());
+        var f = InCamera.WCSizeToPixel(InLight.GetFar());
         var c = InLight.GetColor();
 
         glContext.uniform4fv(this.ColorRef, c);
         glContext.uniform3fv(this.PosRef, vec3.fromValues(p[0], p[1], p[2]));
-        glContext.uniform1f(this.NearRef, ic);
-        glContext.uniform1f(this.FarRef, oc);
+        glContext.uniform1f(this.NearRef, n);
+        glContext.uniform1f(this.FarRef, f);
+        
+        glContext.uniform1f(this.InnerRef, 0.0);
+        glContext.uniform1f(this.OuterRef, 0.0);
         glContext.uniform1f(this.IntensityRef, InLight.GetIntensity());
+        glContext.uniform1f(this.DropOffRef, 0);
+        glContext.uniform1i(this.LightTypeRef, InLight.GetLightType());  
+        
+        if (InLight.GetLightType() === LightObject.ELightType.EPointLight) 
+        {
+            glContext.uniform3fv(this.DirRef, vec3.fromValues(0, 0, 0));
+        } 
+        else 
+        {
+            var d = InCamera.WCDirToPixel(InLight.GetDirection());
+            glContext.uniform3fv(this.DirRef, vec3.fromValues(d[0], d[1], d[2]));
+
+            if (InLight.GetLightType() === LightObject.ELightType.ESpotLight) 
+            {
+                glContext.uniform1f(this.InnerRef, Math.cos(0.5 * InLight.GetInner())); 
+                glContext.uniform1f(this.OuterRef, Math.cos(0.5 * InLight.GetOuter())); 
+                glContext.uniform1f(this.DropOffRef, InLight.GetDropOff());
+            }
+        }
     }
 };
 
@@ -501,8 +541,93 @@ ShaderLightAtIndex.prototype.SetShaderReferences = function (InLightShader, InIn
 
     this.ColorRef = glContext.getUniformLocation(InLightShader,      "uLights[" + InIndex + "].Color");
     this.PosRef = glContext.getUniformLocation(InLightShader,        "uLights[" + InIndex + "].Position");
+    this.DirRef = glContext.getUniformLocation(InLightShader,        "uLights[" + InIndex + "].Direction");
     this.NearRef = glContext.getUniformLocation(InLightShader,       "uLights[" + InIndex + "].Near");
     this.FarRef = glContext.getUniformLocation(InLightShader,        "uLights[" + InIndex + "].Far");
+    this.InnerRef = glContext.getUniformLocation(InLightShader,      "uLights[" + InIndex + "].CosInner");
+    this.OuterRef = glContext.getUniformLocation(InLightShader,      "uLights[" + InIndex + "].CosOuter");
     this.IntensityRef = glContext.getUniformLocation(InLightShader,  "uLights[" + InIndex + "].Intensity");
+    this.DropOffRef = glContext.getUniformLocation(InLightShader,    "uLights[" + InIndex + "].DropOff");
     this.IsOnRef = glContext.getUniformLocation(InLightShader,       "uLights[" + InIndex + "].IsOn");
+    this.LightTypeRef = glContext.getUniformLocation(InLightShader,  "uLights[" + InIndex + "].LightType");
+};
+
+
+
+
+
+
+function IlluminationShader(VertexShaderPath, FragmentShaderPath) 
+{
+    LightShader.call(this, VertexShaderPath, FragmentShaderPath);    
+
+    this.Material = null;
+    this.MaterialLoader = new ShaderMaterial(this.CompiledShader);
+
+    var glContext = IctusBot.Renderer.GetContext();
+
+    this.CameraPos = null;  
+    this.CameraPosRef = glContext.getUniformLocation(this.CompiledShader, "uCameraPosition");
+
+    this.NormalSamplerRef = glContext.getUniformLocation(this.CompiledShader, "uNormalSampler");
+}
+
+IctusBot.Core.InheritPrototype(IlluminationShader, LightShader);
+
+IlluminationShader.prototype.ActivateShader = function(InPixelColor, InCamera) 
+{    
+    LightShader.prototype.ActivateShader.call(this, InPixelColor, InCamera);
+    var glContext = IctusBot.Renderer.GetContext();
+    glContext.uniform1i(this.NormalSamplerRef, 1);
+
+    this.MaterialLoader.LoadToShader(this.Material);
+    glContext.uniform3fv(this.CameraPosRef, this.CameraPos);
+};
+
+IlluminationShader.prototype.SetMaterialAndCameraPos = function(NewMaterial, NewPosition) 
+{ 
+    this.Material = NewMaterial; 
+    this.CameraPos = NewPosition;
+};
+
+
+function ShaderMaterial(InIlluminationShader) 
+{
+    var glContext = IctusBot.Renderer.GetContext();
+    this.KaRef = glContext.getUniformLocation(InIlluminationShader, "uMaterial.Ka");
+    this.KdRef = glContext.getUniformLocation(InIlluminationShader, "uMaterial.Kd");
+    this.KsRef = glContext.getUniformLocation(InIlluminationShader, "uMaterial.Ks");
+    this.ShineRef = glContext.getUniformLocation(InIlluminationShader, "uMaterial.Shininess");
+}
+
+ShaderMaterial.prototype.LoadToShader = function (InMaterial) 
+{
+    var glContext = IctusBot.Renderer.GetContext();
+    glContext.uniform4fv(this.KaRef, InMaterial.GetAmbient());
+    glContext.uniform4fv(this.KdRef, InMaterial.GetDiffuse());
+    glContext.uniform4fv(this.KsRef, InMaterial.GetSpecular());
+    glContext.uniform1f(this.ShineRef, InMaterial.GetShininess());
+};
+
+
+
+function ShadowCasterShader(VertexShaderPath, FragmentShaderPath) 
+{
+    SpriteShader.call(this, VertexShaderPath, FragmentShaderPath);
+
+    this.Light = null;  
+    this.ShaderLight = new ShaderLightAtIndex(this.CompiledShader, 0);
+}
+
+IctusBot.Core.InheritPrototype(ShadowCasterShader, SpriteShader);
+
+ShadowCasterShader.prototype.ActivateShader = function (InPixelColor, InCamera) 
+{
+    SpriteShader.prototype.ActivateShader.call(this, InPixelColor, InCamera);
+    this.ShaderLight.LoadToShader(InCamera, this.Light);
+};
+
+ShadowCasterShader.prototype.SetLight = function (Light) 
+{
+    this.Light = Light;
 };

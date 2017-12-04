@@ -401,6 +401,7 @@ IctusBot.Textures = (function ()
     {
         var glContext = IctusBot.Renderer.GetContext();
         var TexInfo = IctusBot.ResourceManager.RetrieveAsset(TextureName);
+        glContext.activeTexture(glContext.TEXTURE0);
         glContext.bindTexture(glContext.TEXTURE_2D, TexInfo.GLTexID);
         
         // Para previnir wrappings
@@ -408,6 +409,19 @@ IctusBot.Textures = (function ()
         glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_WRAP_T, glContext.CLAMP_TO_EDGE);
 
         // Configura os filtros de majoração de miniaturização.
+        glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_MAG_FILTER, glContext.LINEAR);
+        glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_MIN_FILTER, glContext.LINEAR_MIPMAP_LINEAR);
+    };
+
+    var ActivateNormalMap = function (TextureName) 
+    {
+        var glContext = IctusBot.Renderer.GetContext();
+        var TexInfo = IctusBot.ResourceManager.RetrieveAsset(TextureName);
+
+        glContext.activeTexture(glContext.TEXTURE1);
+        glContext.bindTexture(glContext.TEXTURE_2D, TexInfo.GLTexID);
+        glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_WRAP_S, glContext.CLAMP_TO_EDGE);
+        glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_WRAP_T, glContext.CLAMP_TO_EDGE);
         glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_MAG_FILTER, glContext.LINEAR);
         glContext.texParameteri(glContext.TEXTURE_2D, glContext.TEXTURE_MIN_FILTER, glContext.LINEAR_MIPMAP_LINEAR);
     };
@@ -435,7 +449,134 @@ IctusBot.Textures = (function ()
         UnloadTexture: UnloadTexture,
         ActivateTexture: ActivateTexture,
         DeactivateTexture: DeactivateTexture,
-        GetTextureInfo: GetTextureInfo
+        GetTextureInfo: GetTextureInfo,
+        ActivateNormalMap: ActivateNormalMap
+    };
+
+    return PublicScope;
+
+}());
+
+//=================================================================================================================================
+// Classe que gerencia os Assets de Fonts para texto
+
+function CharacterInfo() 
+{
+    // Coordenadas da font no spritesheet
+    this.TexCoordLeft = 0;
+    this.TexCoordRight = 1;
+    this.TexCoordBottom = 0;
+    this.TexCoordTop = 0;
+  
+    // Tamanho da font mapeada no spritesheet
+    this.CharWidth = 1;
+    this.CharHeight = 1;
+    this.CharWidthOffset = 0;
+    this.CharHeightOffset = 0;
+  
+    // referencia do tamanho (ratio)
+    this.CharAspectRatio = 1;
+  }
+
+
+IctusBot.Fonts = (function () 
+{
+
+    var StoreLoadedFont = function (FontInfoSourceString) 
+    {
+        var FontName = FontInfoSourceString.slice(0, -4);  // trims do aquivo .fnt
+        var FontInfo = IctusBot.ResourceManager.RetrieveAsset(FontInfoSourceString);
+
+        FontInfo.FontImage = FontName + ".png";
+        IctusBot.ResourceManager.AsyncLoadCompleted(FontName, FontInfo);
+    };
+
+    var LoadFont = function (FontName) 
+    {
+        if (!(IctusBot.ResourceManager.IsAssetLoaded(FontName))) 
+        {
+            var FontInfoSourceString = FontName + ".fnt";
+            var TextureSourceString = FontName + ".png";
+
+            IctusBot.ResourceManager.AsyncLoadRequested(FontName); 
+            IctusBot.Textures.LoadTexture(TextureSourceString);
+            IctusBot.TextFileLoader.LoadTextFile(FontInfoSourceString, IctusBot.TextFileLoader.ETextFileType.EXMLFile, StoreLoadedFont);
+        } 
+        else 
+        {
+            IctusBot.ResourceManager.IncreasesAssetRefCount(FontName);
+        }
+    };
+
+    var UnloadFont = function (FontName) 
+    {
+        IctusBot.ResourceManager.UnloadAsset(FontName);
+
+        if (!(IctusBot.ResourceManager.IsAssetLoaded(FontName))) 
+        {
+            var FontInfoSourceString = FontName + ".fnt";
+            var TextureSourceString = FontName + ".png";
+
+            IctusBot.Textures.UnloadTexture(TextureSourceString);
+            IctusBot.TextFileLoader.UnloadTextFile(FontInfoSourceString);
+        }
+    };
+
+    var GetCharInfo = function (FontName, InChar) 
+    {
+        var ReturnInfo = null;
+        // Recebe o xml com os metadados da font no seguinte formato (http://www.angelcode.com/products/bmfont/doc/file_format.html)
+        var FontInfo = IctusBot.ResourceManager.RetrieveAsset(FontName);
+
+        var CommonPath = "font/common";
+        var CommonInfo = FontInfo.evaluate(CommonPath, FontInfo, null, XPathResult.ANY_TYPE, null);
+        CommonInfo = CommonInfo.iterateNext();
+
+        if (CommonInfo === null) 
+        {
+            return ReturnInfo;
+        }
+
+        var CharHeight = CommonInfo.getAttribute("base");
+
+        var CharPath = "font/chars/char[@id=" + InChar + "]";
+        var CharInfo = FontInfo.evaluate(CharPath, FontInfo, null, XPathResult.ANY_TYPE, null);
+        CharInfo = CharInfo.iterateNext();
+
+        if (CharInfo === null) {
+            return ReturnInfo;
+        }
+
+        ReturnInfo = new CharacterInfo();
+        var TexInfo = IctusBot.Textures.GetTextureInfo(FontInfo.FontImage);
+
+        var LeftPixel = Number(CharInfo.getAttribute("x"));
+        var RightPixel = LeftPixel + Number(CharInfo.getAttribute("width")) - 1;
+        var TopPixel = (TexInfo.Height - 1) - Number(CharInfo.getAttribute("y"));
+        var BottomPixel = TopPixel - Number(CharInfo.getAttribute("height")) + 1;
+
+        // Informações da textura
+        ReturnInfo.TexCoordLeft = LeftPixel / (TexInfo.Width - 1);
+        ReturnInfo.TexCoordTop = TopPixel / (TexInfo.Height - 1);
+        ReturnInfo.TexCoordRight = RightPixel / (TexInfo.Width - 1);
+        ReturnInfo.TexCoordBottom = BottomPixel / (TexInfo.Height - 1);
+
+        // relativo ao ratio, tamamnho do charactere
+        var CharWidth = CharInfo.getAttribute("xadvance");
+        ReturnInfo.CharWidth = CharInfo.getAttribute("width") / CharWidth;
+        ReturnInfo.CharHeight = CharInfo.getAttribute("height") / CharHeight;
+        ReturnInfo.CharWidthOffset = CharInfo.getAttribute("xoffset") / CharWidth;
+        ReturnInfo.CharHeightOffset = CharInfo.getAttribute("yoffset") / CharHeight;
+        ReturnInfo.CharAspectRatio = CharWidth / CharHeight;
+
+        return ReturnInfo;
+    };
+
+    var PublicScope = 
+    {
+        LoadFont: LoadFont,
+        UnloadFont: UnloadFont,
+        GetCharInfo: GetCharInfo
     };
 
     return PublicScope;
@@ -452,11 +593,20 @@ IctusBot.DefaultResources = (function ()
     var kTextureVS = "src/Shaders/TextureVertexShader.glsl";  
     var kTextureFS = "src/Shaders/TextureFragmentShader.glsl";  
     var kLightFS = "src/Shaders/LightFS.glsl";  
-    
+    var kIlluminationFS = "src/Shaders/IlluminationFS.glsl";  
+    var kDefaultFont = "Assets/Fonts/system-default-font";
+    var kShadowReceiverFS = "src/Shaders/ShadowReceiverFS.glsl"; 
+    var kShadowCasterFS = "src/Shaders/ShadowCasterFS.glsl";  
+
     var _ConstColorShader = null;
     var _LightShader = null;
     var _TextureShader = null;
     var _SpriteSheetShader = null;
+    var _IlluminationShader = null; 
+    
+    
+    var _ShadowReceiverShader = null;    
+    var _ShadowCasterShader = null;
 
     var _GlobalAmbientColor = [0.3, 0.3, 0.3, 1];
     var _GlobalAmbientIntensity = 1;
@@ -465,11 +615,17 @@ IctusBot.DefaultResources = (function ()
     var GetTextureShader = function () { return _TextureShader; };
     var GetSpriteSheetShader = function () { return _SpriteSheetShader; };
     var GetLightShader = function () { return _LightShader; };
+    var GetIlluminationShader = function () { return _IlluminationShader; };
 
     var GetGlobalAmbientIntensity = function () { return _GlobalAmbientIntensity; };
     var SetGlobalAmbientIntensity = function (v) { _GlobalAmbientIntensity = v; };
     var GetGlobalAmbientColor = function () { return _GlobalAmbientColor; };
     var SetGlobalAmbientColor = function (v) { _GlobalAmbientColor = vec4.fromValues(v[0], v[1], v[2], v[3]); };
+
+    var GetDefaultFont = function () { return kDefaultFont; };
+
+    var GetShadowReceiverShader = function () { return _ShadowReceiverShader; };
+    var GetShadowCasterShader = function () { return _ShadowCasterShader; };
 
 
     var CreateShaders = function (CallBackFunction) 
@@ -479,18 +635,25 @@ IctusBot.DefaultResources = (function ()
         _TextureShader = new TextureShader(kTextureVS, kTextureFS);
         _SpriteSheetShader =  new SpriteShader(kTextureVS, kTextureFS);
         _LightShader = new LightShader(kTextureVS, kLightFS);
+        _IlluminationShader = new IlluminationShader(kTextureVS, kIlluminationFS);
+        _ShadowReceiverShader = new SpriteShader(kTextureVS, kShadowReceiverFS);
+        _ShadowCasterShader = new ShadowCasterShader(kTextureVS, kShadowCasterFS);
         CallBackFunction();
     };
 
     var Initialize = function (CallBackFunction) 
     {    
         IctusBot.TextFileLoader.LoadTextFile(kSimpleVS, IctusBot.TextFileLoader.ETextFileType.ETextFile);
-        IctusBot.TextFileLoader.LoadTextFile(kSimpleFS, IctusBot.TextFileLoader.ETextFileType.ETextFile);
-        
+        IctusBot.TextFileLoader.LoadTextFile(kSimpleFS, IctusBot.TextFileLoader.ETextFileType.ETextFile);        
         IctusBot.TextFileLoader.LoadTextFile(kTextureVS, IctusBot.TextFileLoader.ETextFileType.ETextFile);
-        IctusBot.TextFileLoader.LoadTextFile(kTextureFS, IctusBot.TextFileLoader.ETextFileType.ETextFile);
-        
+        IctusBot.TextFileLoader.LoadTextFile(kTextureFS, IctusBot.TextFileLoader.ETextFileType.ETextFile); 
+        //IctusBot.TextFileLoader.LoadTextFile(kLineFS, IctusBot.TextFileLoader.ETextFileType.ETextFile);       
         IctusBot.TextFileLoader.LoadTextFile(kLightFS, IctusBot.TextFileLoader.ETextFileType.ETextFile);
+        IctusBot.TextFileLoader.LoadTextFile(kIlluminationFS, IctusBot.TextFileLoader.ETextFileType.ETextFile);
+        IctusBot.TextFileLoader.LoadTextFile(kShadowReceiverFS, IctusBot.TextFileLoader.ETextFileType.ETextFile);
+        IctusBot.TextFileLoader.LoadTextFile(kShadowCasterFS, IctusBot.TextFileLoader.ETextFileType.ETextFile);
+
+        IctusBot.Fonts.LoadFont(kDefaultFont);
 
         IctusBot.ResourceManager.SetLoadCompleteCallback(function () { CreateShaders(CallBackFunction); });
     };
@@ -501,6 +664,9 @@ IctusBot.DefaultResources = (function ()
         _LightShader.CleanUp(); 
         _TextureShader.CleanUp();
         _SpriteSheetShader.CleanUp();
+        _IlluminationShader.CleanUp();
+        _ShadowReceiverShader.CleanUp();
+        _ShadowCasterShader.CleanUp();
 
         IctusBot.TextFileLoader.UnloadTextFile(kSimpleVS);
         IctusBot.TextFileLoader.UnloadTextFile(kSimpleFS);
@@ -508,6 +674,11 @@ IctusBot.DefaultResources = (function ()
         IctusBot.TextFileLoader.UnloadTextFile(kTextureFS);
         IctusBot.TextFileLoader.UnloadTextFile(kLineFS);
         IctusBot.TextFileLoader.UnloadTextFile(kLightFS);
+        IctusBot.TextFileLoader.UnloadTextFile(kIlluminationFS); 
+        IctusBot.TextFileLoader.UnloadTextFile(kShadowReceiverFS); 
+        IctusBot.TextFileLoader.UnloadTextFile(kShadowCasterFS);  
+        
+        IctusBot.Fonts.UnloadFont(kDefaultFont);
     };
 
     var PublicScope = 
@@ -521,6 +692,10 @@ IctusBot.DefaultResources = (function ()
         GetLightShader: GetLightShader,
         GetGlobalAmbientIntensity: GetGlobalAmbientIntensity,
         SetGlobalAmbientIntensity: SetGlobalAmbientIntensity,
+        GetIlluminationShader: GetIlluminationShader,
+        GetDefaultFont: GetDefaultFont,
+        GetShadowReceiverShader: GetShadowReceiverShader,
+        GetShadowCasterShader: GetShadowCasterShader,
         CleanUp: CleanUp
     };
 

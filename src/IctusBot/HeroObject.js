@@ -2,9 +2,17 @@
 "use strict";  
 
 
-function HeroObject(InSpriteTexture) 
+function HeroObject(InSpriteTexture, InNormalMap) 
 {
-    this.HeroRender = new LightRenderComponent(InSpriteTexture);
+    if(InNormalMap === null)
+    {
+        this.HeroRender = new LightRenderComponent(InSpriteTexture);
+    }
+    else
+    {
+        this.HeroRender = new IllumimationRenderComponent(InSpriteTexture, InNormalMap);
+    }
+
     this.HeroRender.SetColor([1, 1, 1, 0.1]);
     this.HeroRender.GetTransform().SetPosition(0, 0);
     this.HeroRender.GetTransform().SetScale(5.8, 8);

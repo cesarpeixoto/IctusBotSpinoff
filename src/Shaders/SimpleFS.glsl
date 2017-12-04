@@ -2,7 +2,6 @@
 
 precision mediump float; 
 
-// Color of pixel
 uniform vec4 uPixelColor;  
 uniform vec4 uGlobalAmbientColor;  
 uniform float uGlobalAmbientIntensity;  

@@ -81,6 +81,14 @@ IctusBot.Core = (function ()
         IctusBot.DefaultResources.Initialize(function() { LoadMap(InGameInstance); });
     };
 
+    var StartMatch = function()
+    {
+        if(GameInstance !== null)
+        {
+            GameInstance.StartMatch();
+        }
+    }
+
     var InheritPrototype = function (SubClass, SuperClass) 
     {
         var Prototype = Object.create(SuperClass.prototype);

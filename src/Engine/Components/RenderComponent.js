@@ -18,7 +18,7 @@ function RenderComponent()
     RenderComponent.prototype.Render = function(RenderCamera)
     {
         var glContext = IctusBot.Renderer.GetContext();
-        this.Shader.ActivateShader(this.Color, RenderCamera);  // always activate the shader first!
+        this.Shader.ActivateShader(this.Color, RenderCamera);  
         this.Shader.LoadObjectTransform(this.Transform.GetTransform());
         glContext.drawArrays(glContext.TRIANGLE_STRIP, 0, 4);
     },
@@ -38,6 +38,13 @@ function RenderComponent()
     //-----------------------------------------------------------------------------------------------------------------------------
     // Determina o shader
     RenderComponent.prototype.SetShader = function (InShader) { this.Shader = InShader; }
+
+    RenderComponent.prototype.SwapShader = function (NewShader) 
+    {
+        var out = this.Shader;
+        this.Shader = NewShader;
+        return out;
+    };
 //}
 
 
@@ -103,7 +110,7 @@ SpriteSheetRenderComponent.prototype.SetElementUVCoordinate = function (Left, Ri
 };
 
 //-----------------------------------------------------------------------------------------------------------------------------
-// Determina o elemento por posição de pixel na imagem
+// Determina o elemento por posição de pixel na imagem (faz o corte no sheet)
 SpriteSheetRenderComponent.prototype.SetElementPixelPositions = function (Left, Right, Bottom, Top) 
 {
     var TexInfo = IctusBot.ResourceManager.RetrieveAsset(this.Texture);
@@ -153,7 +160,7 @@ function AnimatedSpriteRenderComponent(InTexture)
     this.FrameWidthPadding = 0.0;
     this.TotalFrames = 1;   
 
-    this.UpdateFramesInterval = 1; // fames rate
+    this.UpdateFramesInterval = 1; 
     this.AnimationType = AnimatedSpriteRenderComponent.EAnimationType.EAnimateRight;
 
     this.CurrentAnimAdvance = -1;
@@ -292,8 +299,109 @@ LightRenderComponent.prototype.GetLightAt = function (InIndex)
     return this.Lights[InIndex];
 };
 
+LightRenderComponent.prototype.NumLights = function () 
+{
+    return this.Lights.length;
+};
+
 LightRenderComponent.prototype.AddLight = function (InLight) 
 {
     this.Lights.push(InLight);
 };
+
+
+
+// App free para gerar os mapas de normais https://shadermap.com/docs/quick_start_generate_maps.html
+
+function IllumimationRenderComponent(InTexture, InNormalMap) 
+{
+    LightRenderComponent.call(this, InTexture);
+    RenderComponent.prototype.SetShader.call(this, IctusBot.DefaultResources.GetIlluminationShader());
+    this.NormalMap = InNormalMap;
+
+    this.Material = new Material();
+}
+
+IctusBot.Core.InheritPrototype(IllumimationRenderComponent, LightRenderComponent);
+
+
+IllumimationRenderComponent.prototype.Render = function (InCamera) 
+{
+    IctusBot.Textures.ActivateNormalMap(this.NormalMap);
+    this.Shader.SetMaterialAndCameraPos(this.Material, InCamera.GetPosInPixelSpace());
+    LightRenderComponent.prototype.Render.call(this, InCamera);
+};
+
+IllumimationRenderComponent.prototype.GetMaterial = function () { return this.Material; };
+
+
+
+function FontRenderComponent(InString) 
+{
+    this.Font = IctusBot.DefaultResources.GetDefaultFont();
+    this.OneChar = new SpriteSheetRenderComponent(this.Font + ".png");
+    this.Transform = new TransformComponent(); 
+    this.Text = InString;
+}
+
+FontRenderComponent.prototype.Render = function (InCamera) 
+{
+    var WidthOfOneChar = this.Transform.GetWidth() / this.Text.length;
+    var HeightOfOneChar = this.Transform.GetHeight();
+
+    var yPos = this.Transform.GetYPosition();
+    var xPos = this.Transform.GetXPosition() - (WidthOfOneChar / 2) + (WidthOfOneChar * 0.5);
+
+    var aChar, CharInfo, xSize, ySize, xOffset, yOffset;
+    
+    for (var CharIndex = 0; CharIndex < this.Text.length; CharIndex++) 
+    {
+        aChar = this.Text.charCodeAt(CharIndex);
+        CharInfo = IctusBot.Fonts.GetCharInfo(this.Font, aChar);
+
+        // mapeamento na UV
+        this.OneChar.SetElementUVCoordinate(CharInfo.TexCoordLeft, CharInfo.TexCoordRight, CharInfo.TexCoordBottom, CharInfo.TexCoordTop);
+
+        // Tamanho do charactere
+        xSize = WidthOfOneChar * CharInfo.CharWidth;
+        ySize = HeightOfOneChar * CharInfo.CharHeight;
+        this.OneChar.GetTransform().SetScale(xSize, ySize);
+
+        // Offset para o centro
+        xOffset = WidthOfOneChar * CharInfo.CharWidthOffset * 0.5;
+        yOffset = HeightOfOneChar * CharInfo.CharHeightOffset * 0.5;
+
+        this.OneChar.GetTransform().SetPosition(xPos - xOffset, yPos - yOffset);
+        this.OneChar.Render(InCamera);
+
+        xPos += WidthOfOneChar;
+    }
+};
+
+FontRenderComponent.prototype.GetTransform = function () { return this.Transform; };
+FontRenderComponent.prototype.GetText = function () { return this.Text; };
+
+FontRenderComponent.prototype.SetText = function (NewText) 
+{
+    this.Text = NewText;
+    this.SetTextHeight(this.GetTransform().GetHeight());
+};
+
+FontRenderComponent.prototype.SetTextHeight = function (NewHeight) 
+{
+    var CharInfo = IctusBot.Fonts.GetCharInfo(this.Font, "A".charCodeAt(0)); 
+    var Width = NewHeight * CharInfo.CharAspectRatio;
+    this.GetTransform().SetScale(Width * this.Text.length, NewHeight);
+};
+
+FontRenderComponent.prototype.GetFont = function () { return this.Font; };
+FontRenderComponent.prototype.SetFont = function (NewFont) 
+{
+    this.Font = NewFont;
+    this.OneChar.SetTexture(this.Font + ".png");
+};
+
+FontRenderComponent.prototype.SetColor = function (NewColor) { this.OneChar.SetColor(NewColor); };
+FontRenderComponent.prototype.GetColor = function () { return this.OneChar.GetColor(); };
+
 

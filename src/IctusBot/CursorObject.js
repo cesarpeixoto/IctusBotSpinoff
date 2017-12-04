@@ -3,7 +3,7 @@
 
 
 
-function CursorObject(InSpriteTexture, InWorldRef, InUnitysMap, InExplosion, InHud) 
+function CursorObject(InSpriteTexture, InWorldRef, InUnitysMap, InExplosion, InHud, InFocusLight, InCamera) 
 {
     this.WorldRef = InWorldRef;
     this.UnitysMap = InUnitysMap;
@@ -13,10 +13,11 @@ function CursorObject(InSpriteTexture, InWorldRef, InUnitysMap, InExplosion, InH
     //this.CursorRender.GetTransform().SetScale(this.kRefWidth / 55, this.kRefHeight / 55);
     this.CursorRender.GetTransform().SetScale(10, 6);
     this.CursorRender.SetElementPixelPositions(0, 128, 0, 64);
+    this.CameraShake = InCamera;
     
     this.Explosion = InExplosion;
     this.Hud = InHud;
-
+    this.FocusLight = InFocusLight;
     this.SelectedUnityId = new SelectedUnity();
 
     GameObject.call(this, this.CursorRender);
@@ -66,7 +67,6 @@ CursorObject.prototype.Update = function (InCamera)
 
     if (IctusBot.Input.IsButtonPressed(IctusBot.Input.MouseButton.Left) == true && lastFrameMouseState == false)
     {
-        console.log("MEU PAU NA SUA MÃO");
         var InSet = "nil";
         if(X > -1 && Y > -1)
         {
@@ -85,6 +85,11 @@ CursorObject.prototype.Update = function (InCamera)
                     this.SelectedUnityId.X = X;
                     this.SelectedUnityId.Y = Y;
                     this.SelectedUnityId.Asset = this.UnitysMap.GetObjectById(board[X][Y]);
+                    
+                    this.FocusLight.SetXPosition(this.SelectedUnityId.Asset.GetTransform().GetXPosition());
+                    this.FocusLight.SetYPosition(this.SelectedUnityId.Asset.GetTransform().GetYPosition());
+                    //LightObject.prototype.SetXPosition = function (x) { this.Position[0] = x; };
+                    //LightObject.prototype.SetYPosition = function (y) { this.Position[1] = y; };
                 }
                 
             }            
@@ -109,6 +114,7 @@ CursorObject.prototype.Update = function (InCamera)
                     }
                     else if(Possibilities[i].action == "kill")
                     {
+                        this.WorldRef.RemoveShadow(this.UnitysMap.GetObjectById(board[X][Y]));
                         this.UnitysMap.RemoveObjectById(board[X][Y]);
                         board[X][Y] = "nil";
                         this.Explosion.Run(X, Y);
@@ -119,6 +125,7 @@ CursorObject.prototype.Update = function (InCamera)
                         this.SelectedUnityId.Asset = null;
                         this.SelectedUnityId.X = -1;
                         this.SelectedUnityId.Y = -1; 
+                        this.CameraShake.Shake(-2, -2, 20, 30);
                     }
 
                     break;

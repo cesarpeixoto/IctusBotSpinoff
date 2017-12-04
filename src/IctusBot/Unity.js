@@ -2,9 +2,18 @@
 
 
 
-function UnityObject(InSpriteTexture) 
+function UnityObject(InSpriteTexture, InNormalMap) 
 {
-    this.UnityRender = new LightRenderComponent(InSpriteTexture);
+            
+    if(InNormalMap === null)
+    {
+        this.UnityRender = new LightRenderComponent(InSpriteTexture);
+    }
+    else
+    {
+        this.UnityRender = new IllumimationRenderComponent(InSpriteTexture, InNormalMap);
+    }
+    //this.UnityRender = new LightRenderComponent(InSpriteTexture);
     this.UnityRender.SetColor([1, 1, 1, 0.1]);
     this.UnityRender.GetTransform().SetPosition(0, 0);
     this.UnityRender.GetTransform().SetScale(5.8, 7);
@@ -14,9 +23,7 @@ function UnityObject(InSpriteTexture)
     
     this.UnityMovement = new MovementControl(this);
     this.Facing = UnityObject.EFaceing.ETop;
-    this.Speed = 10.0;
-
-    
+    this.Speed = 10.0;   
 }
 
 IctusBot.Core.InheritPrototype(UnityObject, GameObject);
